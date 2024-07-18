@@ -20,9 +20,12 @@ open class LoadProductsRequest: NSObject {
         
         self.productsRequest?.delegate = self
         self.productsRequest?.start()
+        
+        print("startstartstart productIdentifiers \(productIdentifiers), productsRequest - \(productsRequest)")
     }
     
     private func finish(result: [SKProduct], error: Error?) {
+        print("finish result \(result), error - \(error)")
         self.completion?(result, error)
         self.completion = nil
         
@@ -40,5 +43,4 @@ extension LoadProductsRequest: SKProductsRequestDelegate {
     public func request(_ request: SKRequest, didFailWithError error: Error) {
         self.finish(result: [], error: error)
     }
-    
 }

@@ -12,8 +12,5 @@ final class SubscriptionsViewModel {
     
     var products: [AnyObject] = []
     
-    init() {
-        let service = PurchaseService(sharedSecretKey: AppConfiguration.sharedSecretKey)
-        service.loadProducts()
-    }
+    init() {}
 }

@@ -41,6 +41,9 @@ final class SubscriptionsViewController: UIViewController {
         ])
         
         tableView.reloadData()
+        
+        let service = PurchaseService(sharedSecretKey: AppConfiguration.sharedSecretKey)
+        service.loadProducts()
     }
 }
 

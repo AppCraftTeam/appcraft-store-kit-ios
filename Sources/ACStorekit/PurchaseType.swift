@@ -1,9 +1,9 @@
 import Foundation
 
 public enum PurchaseType: String, CaseIterable {
-    case assistantChatMonthlyLight = "appcraft.demo.subscription.premium.month"
-    case assistantChatMonthlyMedium = "appcraft.demo.subscription.premium.year"
-    case assistantChatMonthlyHard = "ACMH"
+    case assistantChatMonthlyLight = "appcraft.storeDemo.subscription.premium.month"
+    case assistantChatMonthlyMedium = "appcraft.storeDemo.subscription.premium.year"
+    case assistantChatMonthlyHard = "appcraft.storeDemo.purchase.full"
     
     public var sortHeight: Int {
         switch self {

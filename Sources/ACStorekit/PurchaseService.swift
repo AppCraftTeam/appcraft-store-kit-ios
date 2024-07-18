@@ -65,7 +65,7 @@ open class PurchaseService: PurchaseHelper {
     }
     
     open func loadProducts() {
-        print("loadProducts...")
+        print("loadProducts... \(self.productIdentifiers)")
         self.loadProductsRequest.start { [weak self] products, error in
             print("products - \(products), error - \(error)")
             guard let self = self else { return }
