@@ -9,36 +9,36 @@
 import Foundation
 import StoreKit
 
-extension SKProduct {
+public extension SKProduct {
     
-    var type: PurchaseType? {
+    public var type: PurchaseType? {
         PurchaseType(rawValue: self.productIdentifier)
     }
 
-    var priceDefaultString: String {
+    public var priceDefaultString: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.locale = self.priceLocale
         return formatter.string(from: self.price) ?? ""
     }
     
-    var priceFullString: String {
+    public var priceFullString: String {
         "Включить за \(self.priceDefaultString) в месяц"
     }
 
-    var nameString: String {
+    public var nameString: String {
         !self.localizedTitle.isEmpty ? self.localizedTitle : self.type?.name ?? ""
     }
     
-    var infoString: String {
+    public var infoString: String {
         self.type?.info ?? ""
     }
     
 }
 
-extension Array where Element == SKProduct {
+public extension Array where Element == SKProduct {
     
-    mutating func sortDefault() {
+    public mutating func sortDefault() {
         self.sort(by: { ($0.type?.sortHeight) ?? 0 < ($1.type?.sortHeight ?? 0) })
     }
     

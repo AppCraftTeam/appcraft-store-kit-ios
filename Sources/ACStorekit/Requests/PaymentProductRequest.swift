@@ -1,12 +1,12 @@
 import Foundation
 import StoreKit
 
-class PaymentProductRequest: NSObject {
-    typealias Completion = (SKPaymentTransaction?, Error?) -> Void
+open class PaymentProductRequest: NSObject {
+    public typealias Completion = (SKPaymentTransaction?, Error?) -> Void
     
     private var completion: Completion?
     
-    func puschase(product: SKProduct, _ completion: Completion?) {
+    open func puschase(product: SKProduct, _ completion: Completion?) {
         guard self.completion == nil else { return }
         self.completion = completion
 
@@ -14,7 +14,7 @@ class PaymentProductRequest: NSObject {
         SKPaymentQueue.default().add(.init(product: product))
     }
     
-    func restore(_ completion: Completion?) {
+    open func restore(_ completion: Completion?) {
         guard self.completion == nil else { return }
         self.completion = completion
         
@@ -30,7 +30,7 @@ class PaymentProductRequest: NSObject {
 
 extension PaymentProductRequest: SKPaymentTransactionObserver {
     
-    func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
+    public func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         for transaction in transactions {
             switch transaction.transactionState {
             
@@ -52,5 +52,4 @@ extension PaymentProductRequest: SKPaymentTransactionObserver {
             }
         }
     }
-    
 }

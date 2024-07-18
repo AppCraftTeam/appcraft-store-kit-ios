@@ -1,6 +1,6 @@
 //
 //  SubscriptionsViewController.swift
-//  ACStorekitDemo
+//  acsorekit_demo@tester.com
 //
 //  Created by Pavel Moslienko on 18.07.2024.
 //

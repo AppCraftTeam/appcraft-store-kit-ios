@@ -1,8 +1,8 @@
 import Foundation
 import StoreKit
 
-class ReceiptProductRequest: NSObject {
-    typealias Completion = (Bool, Error?) -> Void
+open class ReceiptProductRequest: NSObject {
+    public typealias Completion = (Bool, Error?) -> Void
     
     private let sandboxVerifyUrl = URL(string: "https://sandbox.itunes.apple.com/verifyReceipt")
     private let prodVerifyUrl = URL(string: "https://buy.itunes.apple.com/verifyReceipt")
@@ -14,14 +14,14 @@ class ReceiptProductRequest: NSObject {
     private var receiptRefreshRequest: SKReceiptRefreshRequest?
     private var completion: Completion?
     
-    let keyReceiptMaxExpiresDate: String
+    public let keyReceiptMaxExpiresDate: String
     
-    init(sharedSecretKey: String, keyReceiptMaxExpiresDate: String) {
+    public init(sharedSecretKey: String, keyReceiptMaxExpiresDate: String) {
         self.sharedSecretKey = sharedSecretKey
         self.keyReceiptMaxExpiresDate = keyReceiptMaxExpiresDate
     }
     
-    func start(_ completion: Completion?) {
+    open func start(_ completion: Completion?) {
         self.completion = completion
         self.countReceiptRefreshRequest = 0
         self.createReceiptData()
@@ -185,14 +185,13 @@ class ReceiptProductRequest: NSObject {
 
 extension ReceiptProductRequest: SKRequestDelegate {
     
-    func requestDidFinish(_ request: SKRequest) {
+    public func requestDidFinish(_ request: SKRequest) {
         request.cancel()
         self.createReceiptData()
     }
-
     
-    func request(_ request: SKRequest, didFailWithError error: Error) {
+    
+    public func request(_ request: SKRequest, didFailWithError error: Error) {
         self.finish(result: false, error: error)
     }
-
 }

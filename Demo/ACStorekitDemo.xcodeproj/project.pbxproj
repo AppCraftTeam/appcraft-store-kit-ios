@@ -14,6 +14,9 @@
 		95D5842E2C49073400783B07 /* ACStorekit in Frameworks */ = {isa = PBXBuildFile; productRef = 95D5842D2C49073400783B07 /* ACStorekit */; };
 		95D584372C49115D00783B07 /* SubscriptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D584362C49115D00783B07 /* SubscriptionsViewController.swift */; };
 		95D584392C49116800783B07 /* SubscriptionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D584382C49116800783B07 /* SubscriptionsViewModel.swift */; };
+		95D5843C2C49197800783B07 /* ACStorekit in Frameworks */ = {isa = PBXBuildFile; productRef = 95D5843B2C49197800783B07 /* ACStorekit */; };
+		95D5843F2C491BBD00783B07 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95D5843E2C491BBD00783B07 /* StoreKit.framework */; };
+		95D584412C491E5300783B07 /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D584402C491E5300783B07 /* AppConfiguration.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +28,8 @@
 		95D584232C4906A900783B07 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		95D584362C49115D00783B07 /* SubscriptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionsViewController.swift; sourceTree = "<group>"; };
 		95D584382C49116800783B07 /* SubscriptionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionsViewModel.swift; sourceTree = "<group>"; };
+		95D5843E2C491BBD00783B07 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		95D584402C491E5300783B07 /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,7 +37,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				95D5843F2C491BBD00783B07 /* StoreKit.framework in Frameworks */,
 				95D5842E2C49073400783B07 /* ACStorekit in Frameworks */,
+				95D5843C2C49197800783B07 /* ACStorekit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,6 +51,7 @@
 			children = (
 				95D584142C4906A700783B07 /* ACStorekitDemo */,
 				95D584132C4906A700783B07 /* Products */,
+				95D5843D2C491BBD00783B07 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -104,6 +112,7 @@
 			isa = PBXGroup;
 			children = (
 				95D584342C49108300783B07 /* Assets */,
+				95D584402C491E5300783B07 /* AppConfiguration.swift */,
 			);
 			path = ApplicationLayer;
 			sourceTree = "<group>";
@@ -125,6 +134,14 @@
 			path = Subscriptions;
 			sourceTree = "<group>";
 		};
+		95D5843D2C491BBD00783B07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				95D5843E2C491BBD00783B07 /* StoreKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -143,6 +160,7 @@
 			name = ACStorekitDemo;
 			packageProductDependencies = (
 				95D5842D2C49073400783B07 /* ACStorekit */,
+				95D5843B2C49197800783B07 /* ACStorekit */,
 			);
 			productName = ACStorekitDemo;
 			productReference = 95D584122C4906A700783B07 /* ACStorekitDemo.app */;
@@ -173,7 +191,7 @@
 			);
 			mainGroup = 95D584092C4906A700783B07;
 			packageReferences = (
-				95D5842C2C49073400783B07 /* XCLocalSwiftPackageReference ".." */,
+				95D5843A2C49197800783B07 /* XCLocalSwiftPackageReference ".." */,
 			);
 			productRefGroup = 95D584132C4906A700783B07 /* Products */;
 			projectDirPath = "";
@@ -202,6 +220,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				95D584392C49116800783B07 /* SubscriptionsViewModel.swift in Sources */,
+				95D584412C491E5300783B07 /* AppConfiguration.swift in Sources */,
 				95D584372C49115D00783B07 /* SubscriptionsViewController.swift in Sources */,
 				95D584162C4906A700783B07 /* AppDelegate.swift in Sources */,
 				95D584182C4906A700783B07 /* SceneDelegate.swift in Sources */,
@@ -419,7 +438,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		95D5842C2C49073400783B07 /* XCLocalSwiftPackageReference ".." */ = {
+		95D5843A2C49197800783B07 /* XCLocalSwiftPackageReference ".." */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ..;
 		};
@@ -427,6 +446,10 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		95D5842D2C49073400783B07 /* ACStorekit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ACStorekit;
+		};
+		95D5843B2C49197800783B07 /* ACStorekit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ACStorekit;
 		};

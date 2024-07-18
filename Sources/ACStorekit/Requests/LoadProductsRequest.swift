@@ -1,18 +1,18 @@
 import Foundation
 import StoreKit
 
-class LoadProductsRequest: NSObject {
-    typealias Completion = ([SKProduct], Error?) -> Void
+open class LoadProductsRequest: NSObject {
+    public typealias Completion = ([SKProduct], Error?) -> Void
     
     private let productIdentifiers: Set<String>
     private var productsRequest: SKProductsRequest?
     private var completion: Completion?
     
-    init(productIdentifiers: Set<String>) {
+    public init(productIdentifiers: Set<String>) {
         self.productIdentifiers = productIdentifiers
     }
     
-    func start(_ completion: Completion?) {
+    open func start(_ completion: Completion?) {
         self.productsRequest?.cancel()
         
         self.productsRequest = .init(productIdentifiers: self.productIdentifiers)
@@ -33,11 +33,11 @@ class LoadProductsRequest: NSObject {
 
 extension LoadProductsRequest: SKProductsRequestDelegate {
 
-    func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
+    public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
         self.finish(result: response.products, error: nil)
     }
 
-    func request(_ request: SKRequest, didFailWithError error: Error) {
+    public func request(_ request: SKRequest, didFailWithError error: Error) {
         self.finish(result: [], error: error)
     }
     

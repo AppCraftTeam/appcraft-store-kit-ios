@@ -1,17 +1,17 @@
 import Foundation
 import StoreKit
 
-protocol PurchaseServiceOutput: AnyObject {
+public protocol PurchaseServiceOutput: AnyObject {
     func error(_ service: PurchaseService, error: Error?)
     func reload(_ service: PurchaseService)
     func purchase(_ service: PurchaseService)
     func restore(_ service: PurchaseService)
 }
 
-final class PurchaseService: PurchaseHelper {
-    static let current = PurchaseService()
+open class PurchaseService: PurchaseHelper {
+    public static let current = PurchaseService(sharedSecretKey: "")
     
-    weak var output: PurchaseServiceOutput?
+    open weak var output: PurchaseServiceOutput?
 
     private(set) var products: [SKProduct] = [] {
         didSet {
@@ -24,18 +24,16 @@ final class PurchaseService: PurchaseHelper {
     
     private let notProvidesErrorCodes: [Int] = [2]
 
-    init() {
+    public init(sharedSecretKey: String) {
         let productIdentifiers = Set(PurchaseType.allCases.compactMap({ $0.productIdentifer }))
-        let sharedSecretKey = "66eb9a4cecb841d986256b6646b1e394"
-        
         super.init(productIdentifiers: productIdentifiers, sharedSecretKey: sharedSecretKey)
     }
 
-    var productActiveIndex: Int? {
+    open var productActiveIndex: Int? {
         self.products.firstIndex(where: { $0.productIdentifier == self.productActive?.productIdentifier })
     }
     
-    func avalibleActiveProduct() {
+    open func avalibleActiveProduct() {
         
     }
     
@@ -47,7 +45,7 @@ final class PurchaseService: PurchaseHelper {
         }
     }
     
-    func updateProductsActive() {
+    open func updateProductsActive() {
         let date = Date()
         var productDate = Date()
         
@@ -66,8 +64,10 @@ final class PurchaseService: PurchaseHelper {
         }
     }
     
-    func loadProducts() {
+    open func loadProducts() {
+        print("loadProducts...")
         self.loadProductsRequest.start { [weak self] products, error in
+            print("products - \(products), error - \(error)")
             guard let self = self else { return }
             
             guard error == nil else {
@@ -80,7 +80,7 @@ final class PurchaseService: PurchaseHelper {
         }
     }
     
-    func purchase(_ product: SKProduct) {
+    open func purchase(_ product: SKProduct) {
         self.paymentProductsRequest.puschase(product: product) { [weak self] _, error in
             guard let self = self else { return }
             
@@ -103,7 +103,7 @@ final class PurchaseService: PurchaseHelper {
         }
     }
 
-    func restore() {
+    open func restore() {
         self.paymentProductsRequest.restore { [weak self] _, error in
             guard let self = self else { return }
             
@@ -125,7 +125,6 @@ final class PurchaseService: PurchaseHelper {
             }
         }
     }
-
 }
 
 

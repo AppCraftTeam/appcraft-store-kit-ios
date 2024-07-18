@@ -1,11 +1,11 @@
 import Foundation
 
-enum PurchaseType: String, CaseIterable {
-    case assistantChatMonthlyLight = "ACML"
-    case assistantChatMonthlyMedium = "ACMM"
+public enum PurchaseType: String, CaseIterable {
+    case assistantChatMonthlyLight = "appcraft.demo.subscription.premium.month"
+    case assistantChatMonthlyMedium = "appcraft.demo.subscription.premium.year"
     case assistantChatMonthlyHard = "ACMH"
     
-    var sortHeight: Int {
+    public var sortHeight: Int {
         switch self {
         case .assistantChatMonthlyLight:
             return 0
@@ -16,11 +16,11 @@ enum PurchaseType: String, CaseIterable {
         }
     }
     
-    var productIdentifer: String {
+    public var productIdentifer: String {
         self.rawValue
     }
 
-    var name: String {
+    public var name: String {
         switch self {
         case .assistantChatMonthlyLight:
             return "Тариф Консультант"
@@ -31,7 +31,7 @@ enum PurchaseType: String, CaseIterable {
         }
     }
     
-    var info: String {
+    public var info: String {
         switch self {
         case .assistantChatMonthlyLight:
             return "Подробно проконсультируем по любой ситуации 24/7"
