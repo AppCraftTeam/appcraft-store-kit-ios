@@ -11,9 +11,9 @@ import StoreKit
 
 public extension SKProduct {
     
-    public var type: PurchaseType? {
-        PurchaseType(rawValue: self.productIdentifier)
-    }
+//    public var type: PurchaseType? {
+//        PurchaseType(rawValue: self.productIdentifier)
+//    }
 
     public var priceDefaultString: String {
         let formatter = NumberFormatter()
@@ -27,11 +27,13 @@ public extension SKProduct {
     }
 
     public var nameString: String {
-        !self.localizedTitle.isEmpty ? self.localizedTitle : self.type?.name ?? ""
+        //!self.localizedTitle.isEmpty ? self.localizedTitle : self.type?.name ?? ""
+        "name"
     }
     
     public var infoString: String {
-        self.type?.info ?? ""
+        //self.type?.info ?? ""
+        ""
     }
     
 }
@@ -39,7 +41,8 @@ public extension SKProduct {
 public extension Array where Element == SKProduct {
     
     public mutating func sortDefault() {
-        self.sort(by: { ($0.type?.sortHeight) ?? 0 < ($1.type?.sortHeight ?? 0) })
+        //self.sort(by: { ($0.type?.sortHeight) ?? 0 < ($1.type?.sortHeight ?? 0) })
+        true
     }
     
 }

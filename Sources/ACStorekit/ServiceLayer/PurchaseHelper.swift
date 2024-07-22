@@ -1,12 +1,12 @@
 import StoreKit
 
 open class PurchaseHelper {
-    public let productIdentifiers: Set<String>
+    public let productIdentifiers: Set<ACProductTypeItem>
     public let loadProductsRequest: LoadProductsRequest
     public let paymentProductsRequest: PaymentProductRequest
     public let receiptProductRequest: ReceiptProductRequest
     
-    public init(productIdentifiers: Set<String>, sharedSecretKey: String) {
+    public init(productIdentifiers: Set<ACProductTypeItem>, sharedSecretKey: String) {
         self.productIdentifiers = productIdentifiers
         self.loadProductsRequest = .init(productIdentifiers: productIdentifiers)
         self.paymentProductsRequest = .init()

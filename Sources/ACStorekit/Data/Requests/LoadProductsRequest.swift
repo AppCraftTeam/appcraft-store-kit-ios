@@ -4,28 +4,28 @@ import StoreKit
 open class LoadProductsRequest: NSObject {
     public typealias Completion = ([SKProduct], Error?) -> Void
     
-    private let productIdentifiers: Set<String>
+    private let productIdentifiers: Set<ACProductTypeItem>
     private var productsRequest: SKProductsRequest?
     private var completion: Completion?
     
-    public init(productIdentifiers: Set<String>) {
+    public init(productIdentifiers: Set<ACProductTypeItem>) {
         self.productIdentifiers = productIdentifiers
     }
-    
+    deinit {
+        print("deinit LoadProductsRequest")
+    }
     open func start(_ completion: Completion?) {
         self.productsRequest?.cancel()
         
-        self.productsRequest = .init(productIdentifiers: self.productIdentifiers)
+        let ids = self.productIdentifiers.map({ $0.product.productIdentifer })
+        self.productsRequest = .init(productIdentifiers: Set(ids))
         self.completion = completion
         
         self.productsRequest?.delegate = self
         self.productsRequest?.start()
-        
-        print("startstartstart productIdentifiers \(productIdentifiers), productsRequest - \(productsRequest)")
     }
     
     private func finish(result: [SKProduct], error: Error?) {
-        print("finish result \(result), error - \(error)")
         self.completion?(result, error)
         self.completion = nil
         

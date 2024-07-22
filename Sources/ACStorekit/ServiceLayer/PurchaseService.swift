@@ -9,11 +9,15 @@ public protocol PurchaseServiceOutput: AnyObject {
 }
 
 open class PurchaseService: PurchaseHelper {
-    public static let current = PurchaseService(sharedSecretKey: "")
+    public static let current = PurchaseService(sharedSecretKey: "", products: [])
+    
+    deinit {
+        print("deinit PurchaseService")
+    }
     
     open weak var output: PurchaseServiceOutput?
 
-    private(set) var products: [SKProduct] = [] {
+    private(set) var products: [ACPurchases] = [] {
         didSet {
             self.products.sortDefault()
             self.updateProductsActive()
@@ -24,13 +28,12 @@ open class PurchaseService: PurchaseHelper {
     
     private let notProvidesErrorCodes: [Int] = [2]
 
-    public init(sharedSecretKey: String) {
-        let productIdentifiers = Set(PurchaseType.allCases.compactMap({ $0.productIdentifer }))
-        super.init(productIdentifiers: productIdentifiers, sharedSecretKey: sharedSecretKey)
+    public init(sharedSecretKey: String, products: Set<ACProductTypeItem>) {
+        super.init(productIdentifiers: products, sharedSecretKey: sharedSecretKey)
     }
 
     open var productActiveIndex: Int? {
-        self.products.firstIndex(where: { $0.productIdentifier == self.productActive?.productIdentifier })
+        self.products.firstIndex(where: { $0.product.productIdentifer == self.productActive?.productIdentifier })
     }
     
     open func avalibleActiveProduct() {
@@ -52,7 +55,7 @@ open class PurchaseService: PurchaseHelper {
         self.productActive = nil
         guard self.purchaseAvalible() else { return }
         
-        for product in self.products {
+        for product in self.products.map({ $0.skProduct }) {
             guard
                 self.checkActiveProductFromLocal(product, nowDate: date),
                 let expiresDate = self.getProductExpiresDateFromLocal(product),
@@ -74,8 +77,25 @@ open class PurchaseService: PurchaseHelper {
                 self.provideError(error)
                 return
             }
-            
-            self.products = products
+            var productsItems: [ACPurchases] = []
+            let arr = Array(self.productIdentifiers)
+            products.forEach({ sdkProduct in
+                print("products vvvv - \(arr.getProduct(for: sdkProduct.productIdentifier))")
+
+                if let info = arr.getProduct(for: sdkProduct.productIdentifier) {
+                    productsItems += [
+                        ACPurchases(
+                            product: info,
+                            skProduct: sdkProduct
+                        )
+                    ]
+                }
+            })
+            print("products arr - \(arr)")
+
+            self.products = productsItems
+            print("products productsItems - \(productsItems) is \(productsItems.map({ $0.skProduct.productIdentifier }))")
+
             self.output?.reload(self)
         }
     }

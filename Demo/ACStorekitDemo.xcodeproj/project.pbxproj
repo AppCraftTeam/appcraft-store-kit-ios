@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9512B43A2C49446E00B87E78 /* AppPurchases.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9512B4392C49446E00B87E78 /* AppPurchases.swift */; };
 		95D584162C4906A700783B07 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D584152C4906A700783B07 /* AppDelegate.swift */; };
 		95D584182C4906A700783B07 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D584172C4906A700783B07 /* SceneDelegate.swift */; };
 		95D5841F2C4906A900783B07 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 95D5841E2C4906A900783B07 /* Assets.xcassets */; };
@@ -20,7 +21,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		950CCB442C493C3400B481BD /* MainStoreKitConfiguration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = MainStoreKitConfiguration.storekit; sourceTree = "<group>"; };
+		9512B4392C49446E00B87E78 /* AppPurchases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPurchases.swift; sourceTree = "<group>"; };
+		9542A1292C4A6AF1001B78DA /* MainStoreKitConfigurationFile.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = MainStoreKitConfigurationFile.storekit; sourceTree = "<group>"; };
 		95D584122C4906A700783B07 /* ACStorekitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ACStorekitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		95D584152C4906A700783B07 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		95D584172C4906A700783B07 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -51,7 +53,7 @@
 		95D584092C4906A700783B07 = {
 			isa = PBXGroup;
 			children = (
-				950CCB442C493C3400B481BD /* MainStoreKitConfiguration.storekit */,
+				9542A1292C4A6AF1001B78DA /* MainStoreKitConfigurationFile.storekit */,
 				95DEB79C2C49285900638864 /* PrivacyInfo.xcprivacy */,
 				95D584142C4906A700783B07 /* ACStorekitDemo */,
 				95D584132C4906A700783B07 /* Products */,
@@ -108,6 +110,7 @@
 		95D584322C49107100783B07 /* DomainLayer */ = {
 			isa = PBXGroup;
 			children = (
+				9512B4392C49446E00B87E78 /* AppPurchases.swift */,
 			);
 			path = DomainLayer;
 			sourceTree = "<group>";
@@ -225,6 +228,7 @@
 			files = (
 				95D584392C49116800783B07 /* SubscriptionsViewModel.swift in Sources */,
 				95D584412C491E5300783B07 /* AppConfiguration.swift in Sources */,
+				9512B43A2C49446E00B87E78 /* AppPurchases.swift in Sources */,
 				95D584372C49115D00783B07 /* SubscriptionsViewController.swift in Sources */,
 				95D584162C4906A700783B07 /* AppDelegate.swift in Sources */,
 				95D584182C4906A700783B07 /* SceneDelegate.swift in Sources */,
@@ -370,9 +374,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = C6R43LZVYJ;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = CVFSZXK7VF;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ACStorekitDemo/SupportLayer/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -384,9 +390,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.appcraft.storekit.example;
+				PRODUCT_BUNDLE_IDENTIFIER = com.appcraft.acstorekit.demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "storekit profile";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -399,9 +406,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = C6R43LZVYJ;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = CVFSZXK7VF;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ACStorekitDemo/SupportLayer/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -413,9 +422,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.appcraft.storekit.example;
+				PRODUCT_BUNDLE_IDENTIFIER = com.appcraft.acstorekit.demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "storekit profile";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
