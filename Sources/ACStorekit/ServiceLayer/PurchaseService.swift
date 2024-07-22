@@ -17,7 +17,7 @@ open class PurchaseService: PurchaseHelper {
     
     open weak var output: PurchaseServiceOutput?
 
-    private(set) var products: [ACPurchases] = [] {
+    private(set) public var products: [ACPurchases] = [] {
         didSet {
             self.products.sortDefault()
             self.updateProductsActive()
@@ -124,7 +124,9 @@ open class PurchaseService: PurchaseHelper {
     }
 
     open func restore() {
+        print("restore")
         self.paymentProductsRequest.restore { [weak self] _, error in
+            print("restore...")
             guard let self = self else { return }
             
             guard error == nil else {

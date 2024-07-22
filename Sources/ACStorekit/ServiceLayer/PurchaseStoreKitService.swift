@@ -18,7 +18,7 @@ class SubscriptionsManager: NSObject, ObservableObject {
     
     private var updates: Task<Void, Never>? = nil
     
-    override init(productIDs: [String]) {
+    init(productIDs: [String]) {
         self.productIDs = productIDs
         super.init()
         self.updates = observeTransactionUpdates()
