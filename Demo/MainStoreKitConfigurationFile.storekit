@@ -1,35 +1,35 @@
 {
-  "identifier" : "48F447F1",
+  "identifier" : "F6FDE138",
   "nonRenewingSubscriptions" : [
 
   ],
   "products" : [
     {
-      "displayPrice" : "50.0",
+      "displayPrice" : "39.99",
       "familyShareable" : false,
-      "internalID" : "F48C30C1",
+      "internalID" : "6557068406",
       "localizations" : [
         {
-          "description" : "Full app version",
-          "displayName" : "Full",
+          "description" : "Purchase full version",
+          "displayName" : "Full version",
           "locale" : "en_US"
         }
       ],
       "productID" : "appcraft.storeDemo.purchase.full",
-      "referenceName" : "Full version",
+      "referenceName" : "Full Version",
       "type" : "NonConsumable"
     }
   ],
   "settings" : {
+    "_applicationInternalID" : "6557068373",
+    "_developerTeamID" : "CVFSZXK7VF",
     "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 743074550.23690903,
     "_locale" : "en_US",
     "_storefront" : "USA",
     "_storeKitErrors" : [
       {
-        "current" : {
-          "index" : 2,
-          "type" : "generic"
-        },
+        "current" : null,
         "enabled" : false,
         "name" : "Load Products"
       },
@@ -77,7 +77,7 @@
   },
   "subscriptionGroups" : [
     {
-      "id" : "F1DEA2EA",
+      "id" : "21513501",
       "localizations" : [
 
       ],
@@ -93,19 +93,19 @@
           "displayPrice" : "0.99",
           "familyShareable" : false,
           "groupNumber" : 1,
-          "internalID" : "4D9EF9E4",
+          "internalID" : "6557068467",
           "introductoryOffer" : null,
           "localizations" : [
             {
-              "description" : "Month subscription",
-              "displayName" : "Month premium",
+              "description" : "Premium for 1 month",
+              "displayName" : "Month",
               "locale" : "en_US"
             }
           ],
-          "productID" : "appcraft.storeDemo.subscription.premium.month",
+          "productID" : "appcraft.storeDemo.subscription.month",
           "recurringSubscriptionPeriod" : "P1M",
           "referenceName" : "Month",
-          "subscriptionGroupID" : "F1DEA2EA",
+          "subscriptionGroupID" : "21513501",
           "type" : "RecurringSubscription"
         },
         {
@@ -117,20 +117,20 @@
           ],
           "displayPrice" : "19.99",
           "familyShareable" : false,
-          "groupNumber" : 1,
-          "internalID" : "28C14000",
+          "groupNumber" : 2,
+          "internalID" : "6557068394",
           "introductoryOffer" : null,
           "localizations" : [
             {
-              "description" : "Year subscription",
-              "displayName" : "Year premium",
+              "description" : "Premium for 1 year",
+              "displayName" : "Year",
               "locale" : "en_US"
             }
           ],
-          "productID" : "appcraft.storeDemo.subscription.premium.year",
+          "productID" : "appcraft.storeDemo.subscription.year",
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "Year",
-          "subscriptionGroupID" : "F1DEA2EA",
+          "subscriptionGroupID" : "21513501",
           "type" : "RecurringSubscription"
         }
       ]
