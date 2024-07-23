@@ -41,12 +41,14 @@ final class SubscriptionsViewModel {
             },
             didProductPurchased: {  product in
                 DispatchQueue.main.async { [weak self] in
+                    self?.didProductsLoaded?()
                     self?.didStopLoading?()
                 }
                 
             },
             didProductsRestored: { product in
                 DispatchQueue.main.async { [weak self] in
+                    self?.didProductsLoaded?()
                     self?.didStopLoading?()
                 }
             },

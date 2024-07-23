@@ -6,7 +6,7 @@ public enum PurchaseAction {
 }
 
 open class PurchaseService: PurchaseHelper {
-
+    
     // MARK: - Callbacks
     public var didProductsListUpdated: ((_: [ACPurchases]) -> Void)?
     public var didProductPurchased: ((_: ACPurchases) -> Void)?
@@ -14,24 +14,22 @@ open class PurchaseService: PurchaseHelper {
     public var didFailedFetchProducts: ((_: Error?) -> Void)?
     public var didFailedBuyPurchase: ((_: Error?) -> Void)?
     public var didFailedRestorePurchase: ((_: Error?) -> Void)?
-
+    
     // MARK: - Params
     private(set) public var products: [ACPurchases] = [] {
         didSet {
             self.products.sortDefault()
-            self.updateProductsActive()
+            self.updateProductsActiveStatus()
         }
     }
     
     private var currentAction: PurchaseAction?
-    
-    private(set) public var productActive: SKProduct?
-    
+        
     // paymentCancelled
     private let notProvidesErrorCodes: [Int] = [2]
-
+    
     public static let current = PurchaseService(sharedSecretKey: "", products: [])
-
+    
     public init(sharedSecretKey: String, products: Set<ACProductTypeItem>) {
         super.init(productIdentifiers: products, sharedSecretKey: sharedSecretKey)
     }
@@ -39,12 +37,6 @@ open class PurchaseService: PurchaseHelper {
     deinit {
         print("deinit PurchaseService")
     }
-    
-    open var productActiveIndex: Int? {
-        self.products.firstIndex(where: { $0.product.productIdentifer == self.productActive?.productIdentifier })
-    }
-    
-    open func avalibleActiveProduct() {}
     
     func makeErrorObjectify(_ error: Error?) -> Error? {
         if let error = error,
@@ -70,29 +62,23 @@ open class PurchaseService: PurchaseHelper {
         self.didFailedRestorePurchase = didFailedRestorePurchase
     }
     
-    open func updateProductsActive() {
+    open func updateProductsActiveStatus() {
         let date = Date()
         var productDate = Date()
         
-        self.productActive = nil
         guard self.purchaseAvalible() else { return }
-        
-        for product in self.products.map({ $0.skProduct }) {
-            guard
-                self.checkActiveProductFromLocal(product, nowDate: date),
-                let expiresDate = self.getProductExpiresDateFromLocal(product),
-                expiresDate > productDate
-            else { continue }
+        self.products.forEach({ product in
+            let expiresDate: Date? = self.getProductExpiresDateFromLocal(product.skProduct)
+            let isActive = self.isActiveProduct(product.skProduct)
             
-            self.productActive = product
-            productDate = expiresDate
-        }
+            product.updateActive(isActive, expiresDate: expiresDate)
+        })
+        print("updateProductsActiveStatus productsItems - \(products.map({ $0.debugDescription }))")
     }
     
     open func loadProducts() {
         print("loadProducts... \(self.productIdentifiers)")
         self.loadProductsRequest.start { [weak self] products, error in
-            print("products - \(products), error - \(error)")
             guard let self = self else { return }
             
             guard error == nil else {
@@ -101,24 +87,45 @@ open class PurchaseService: PurchaseHelper {
             }
             var productsItems: [ACPurchases] = []
             let arr = Array(self.productIdentifiers)
+            
+            let date = Date()
+            var productDate = Date()
+            
             products.forEach({ sdkProduct in
-                print("products vvvv - \(arr.getProduct(for: sdkProduct.productIdentifier))")
-
+                let expiresDate: Date? = self.getProductExpiresDateFromLocal(sdkProduct)
+                let isActive = self.isActiveProduct(sdkProduct)
+                
                 if let info = arr.getProduct(for: sdkProduct.productIdentifier) {
                     productsItems += [
                         ACPurchases(
                             product: info,
-                            skProduct: sdkProduct
+                            skProduct: sdkProduct,
+                            expiresDate: expiresDate,
+                            isActive: isActive
                         )
                     ]
                 }
             })
-            print("products arr - \(arr)")
-
+            
             self.products = productsItems
-            print("products productsItems - \(productsItems) is \(productsItems.map({ $0.skProduct.productIdentifier }))")
+            print("products productsItems - \(productsItems.map({ $0.debugDescription }))")
             self.didProductsListUpdated?(self.products)
         }
+    }
+    
+    private func isActiveProduct(_ product: SKProduct) -> Bool {
+        let date = Date()
+        var productDate = Date()
+        let expiresDate: Date? = self.getProductExpiresDateFromLocal(product)
+
+        guard
+            self.checkActiveProductFromLocal(product, nowDate: date),
+            let expiresDate = expiresDate,
+            expiresDate > productDate
+        else {
+            return false
+        }
+        return true
     }
     
     open func purchase(_ product: SKProduct) {
@@ -138,13 +145,13 @@ open class PurchaseService: PurchaseHelper {
                     return
                 }
                 
-                self.updateProductsActive()
+                self.updateProductsActiveStatus()
                 //self.didProductPurchased?()
                 self.didProductsListUpdated?(self.products)
             }
         }
     }
-
+    
     open func restore() {
         print("restore")
         self.paymentProductsRequest.restore { [weak self] _, error in
@@ -164,7 +171,7 @@ open class PurchaseService: PurchaseHelper {
                     return
                 }
                 
-                self.updateProductsActive()
+                self.updateProductsActiveStatus()
                 //self.didProductsRestored?()
                 self.didProductsListUpdated?(self.products)
             }

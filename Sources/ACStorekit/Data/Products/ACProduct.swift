@@ -8,11 +8,6 @@
 import Foundation
 import StoreKit
 
-public protocol ACPurchaseType {
-    var product: ACProduct { get }
-    var skProduct: SKProduct { get }
-}
-
 public protocol ACProductItem {
     var productIdentifer: String { get }
     var name: String { get }
@@ -20,6 +15,7 @@ public protocol ACProductItem {
     var sortIndex: Int { get }
 }
 
+/// Filled in user application
 open class ACProduct: ACProductItem {
     open var productIdentifer: String
     open var name: String

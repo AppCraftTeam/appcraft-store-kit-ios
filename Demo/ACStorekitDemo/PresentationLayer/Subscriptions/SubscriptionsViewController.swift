@@ -168,10 +168,16 @@ extension SubscriptionsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if let activeProduct = model.service.productActive {
-            return activeProduct.localizedTitle
+        "Subscription products"
+    }
+    
+    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        let activeProducts = model.service.products.getActiveProducts()
+        if activeProducts.isEmpty {
+            return nil
         }
-        return nil
+        let activeProductsInfoText = activeProducts.map({ $0.skProduct.productIdentifier + ": \(String(describing: $0.expiresDate))" }).joined(separator: ", ")
+        return "Active subscription: \(activeProductsInfoText)"
     }
 }
 
