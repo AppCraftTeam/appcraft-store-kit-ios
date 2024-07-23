@@ -13,7 +13,7 @@ open class PurchaseHelper {
         self.receiptProductRequest = .init(sharedSecretKey: sharedSecretKey, keyReceiptMaxExpiresDate: "keyReceiptMaxExpiresDate")
     }
     
-    open func checkActiveProductFromLocal(_ product: SKProduct, nowDate: Date) -> Bool {
+    open func isActiveProductExpiresDateFromLocal(_ product: SKProduct, nowDate: Date) -> Bool {
         guard let date = self.getProductExpiresDateFromLocal(product) else { return false }
         return date > nowDate
     }

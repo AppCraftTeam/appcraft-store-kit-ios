@@ -39,14 +39,16 @@ final class SubscriptionsViewModel {
                 }
                 
             },
-            didProductPurchased: {  product in
+            didProductPurchased: {  products in
+                print("didProductPurchased - \(products.map({ $0.debugDescription }))")
                 DispatchQueue.main.async { [weak self] in
                     self?.didProductsLoaded?()
                     self?.didStopLoading?()
                 }
                 
             },
-            didProductsRestored: { product in
+            didProductsRestored: { products in
+                print("didProductsRestored - \(products.map({ $0.debugDescription }))")
                 DispatchQueue.main.async { [weak self] in
                     self?.didProductsLoaded?()
                     self?.didStopLoading?()
