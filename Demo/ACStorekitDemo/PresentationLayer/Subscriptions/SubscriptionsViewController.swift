@@ -141,7 +141,7 @@ private extension SubscriptionsViewController {
 extension SubscriptionsViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        model.service.products.count
+        model.service.products.filter({ $0.skProduct.isSubscription }).count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -165,6 +165,13 @@ extension SubscriptionsViewController: UITableViewDataSource {
         model.selectedProduct = product
         purchaseButton.isUserInteractionEnabled = model.selectedProduct != nil
         tableView.reloadData()
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if let activeProduct = model.service.productActive {
+            return activeProduct.localizedTitle
+        }
+        return nil
     }
 }
 

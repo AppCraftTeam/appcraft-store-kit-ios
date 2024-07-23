@@ -25,42 +25,51 @@ final class SubscriptionsViewModel {
     
     init() {
         self.service = PurchaseService(sharedSecretKey: AppConfiguration.sharedSecretKey, products: SubscriptionsViewModel.products)
-        self.service.output = self
     }
     
     func reload() {
         self.didBeginLoading?()
+        
+        self.service.setupCallbacks(
+            didProductsListUpdated: { products in
+                DispatchQueue.main.async { [weak self] in
+                    self?.selectedProduct = products.first(where: { $0.skProduct.isSubscription })
+                    self?.didProductsLoaded?()
+                    self?.didStopLoading?()
+                }
+                
+            },
+            didProductPurchased: {  product in
+                DispatchQueue.main.async { [weak self] in
+                    self?.didStopLoading?()
+                }
+                
+            },
+            didProductsRestored: { product in
+                DispatchQueue.main.async { [weak self] in
+                    self?.didStopLoading?()
+                }
+            },
+            didFailedFetchProducts: { error in
+                print("didFailedFetchProducts - \(String(describing: error?.localizedDescription))")
+                DispatchQueue.main.async { [weak self] in
+                    self?.didStopLoading?()
+                }
+            },
+            didFailedBuyPurchase: { error in
+                print("didFailedBuyPurchase - \(String(describing: error?.localizedDescription))")
+                DispatchQueue.main.async { [weak self] in
+                    self?.didStopLoading?()
+                }
+            },
+            didFailedRestorePurchase: { error in
+                print("didFailedRestorePurchase - \(String(describing: error?.localizedDescription))")
+                DispatchQueue.main.async { [weak self] in
+                    self?.didStopLoading?()
+                }
+            }
+        )
+        
         self.service.loadProducts()
-    }
-}
-
-// MARK: - PurchaseServiceOutput
-extension SubscriptionsViewModel: PurchaseServiceOutput {
-    func error(_ service: ACStorekit.PurchaseService, error: Error?) {
-        print("PurchaseService error - \(String(describing: error?.localizedDescription))")
-        self.didStopLoading?()
-    }
-    
-    func reload(_ service: ACStorekit.PurchaseService) {
-        print("PurchaseService reloaded")
-        DispatchQueue.main.async { [weak self] in
-            self?.selectedProduct = service.products.first
-            self?.didProductsLoaded?()
-            self?.didStopLoading?()
-        }
-    }
-    
-    func purchase(_ service: ACStorekit.PurchaseService) {
-        print("PurchaseService purchased")
-        DispatchQueue.main.async { [weak self] in
-            self?.didStopLoading?()
-        }
-    }
-    
-    func restore(_ service: ACStorekit.PurchaseService) {
-        print("PurchaseService restored")
-        DispatchQueue.main.async { [weak self] in
-            self?.didStopLoading?()
-        }
     }
 }

@@ -11,38 +11,15 @@ import StoreKit
 
 public extension SKProduct {
     
-//    public var type: PurchaseType? {
-//        PurchaseType(rawValue: self.productIdentifier)
-//    }
-
     public var priceDefaultString: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.locale = self.priceLocale
+        
         return formatter.string(from: self.price) ?? ""
     }
     
-    public var priceFullString: String {
-        "Включить за \(self.priceDefaultString) в месяц"
+    public var isSubscription: Bool {
+        self.subscriptionPeriod != nil
     }
-
-    public var nameString: String {
-        //!self.localizedTitle.isEmpty ? self.localizedTitle : self.type?.name ?? ""
-        "name"
-    }
-    
-    public var infoString: String {
-        //self.type?.info ?? ""
-        ""
-    }
-    
-}
-
-public extension Array where Element == SKProduct {
-    
-    public mutating func sortDefault() {
-        //self.sort(by: { ($0.type?.sortHeight) ?? 0 < ($1.type?.sortHeight ?? 0) })
-        true
-    }
-    
 }

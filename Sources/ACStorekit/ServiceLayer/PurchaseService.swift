@@ -1,22 +1,21 @@
 import Foundation
 import StoreKit
 
-public protocol PurchaseServiceOutput: AnyObject {
-    func error(_ service: PurchaseService, error: Error?)
-    func reload(_ service: PurchaseService)
-    func purchase(_ service: PurchaseService)
-    func restore(_ service: PurchaseService)
+public enum PurchaseAction {
+    case purchase, restore
 }
 
 open class PurchaseService: PurchaseHelper {
-    public static let current = PurchaseService(sharedSecretKey: "", products: [])
-    
-    deinit {
-        print("deinit PurchaseService")
-    }
-    
-    open weak var output: PurchaseServiceOutput?
 
+    // MARK: - Callbacks
+    public var didProductsListUpdated: ((_: [ACPurchases]) -> Void)?
+    public var didProductPurchased: ((_: ACPurchases) -> Void)?
+    public var didProductsRestored: ((_: ACPurchases) -> Void)?
+    public var didFailedFetchProducts: ((_: Error?) -> Void)?
+    public var didFailedBuyPurchase: ((_: Error?) -> Void)?
+    public var didFailedRestorePurchase: ((_: Error?) -> Void)?
+
+    // MARK: - Params
     private(set) public var products: [ACPurchases] = [] {
         didSet {
             self.products.sortDefault()
@@ -24,28 +23,51 @@ open class PurchaseService: PurchaseHelper {
         }
     }
     
-    private(set) var productActive: SKProduct?
+    private var currentAction: PurchaseAction?
     
+    private(set) public var productActive: SKProduct?
+    
+    // paymentCancelled
     private let notProvidesErrorCodes: [Int] = [2]
+
+    public static let current = PurchaseService(sharedSecretKey: "", products: [])
 
     public init(sharedSecretKey: String, products: Set<ACProductTypeItem>) {
         super.init(productIdentifiers: products, sharedSecretKey: sharedSecretKey)
     }
-
+    
+    deinit {
+        print("deinit PurchaseService")
+    }
+    
     open var productActiveIndex: Int? {
         self.products.firstIndex(where: { $0.product.productIdentifer == self.productActive?.productIdentifier })
     }
     
-    open func avalibleActiveProduct() {
-        
+    open func avalibleActiveProduct() {}
+    
+    func makeErrorObjectify(_ error: Error?) -> Error? {
+        if let error = error,
+           !self.notProvidesErrorCodes.contains((error as NSError).code) {
+            return error
+        }
+        return nil
     }
     
-    private func provideError(_ error: Error?) {
-        if let error = error, !self.notProvidesErrorCodes.contains((error as NSError).code) {
-            self.output?.error(self, error: error)
-        } else {
-            self.output?.error(self, error: nil)
-        }
+    open func setupCallbacks(
+        didProductsListUpdated: ((_: [ACPurchases]) -> Void)?,
+        didProductPurchased: ((_: ACPurchases) -> Void)?,
+        didProductsRestored: ((_: ACPurchases) -> Void)?,
+        didFailedFetchProducts: ((_: Error?) -> Void)?,
+        didFailedBuyPurchase: ((_: Error?) -> Void)?,
+        didFailedRestorePurchase: ((_: Error?) -> Void)?
+    ) {
+        self.didProductsListUpdated = didProductsListUpdated
+        self.didProductPurchased = didProductPurchased
+        self.didProductsRestored = didProductsRestored
+        self.didFailedFetchProducts = didFailedFetchProducts
+        self.didFailedBuyPurchase = didFailedBuyPurchase
+        self.didFailedRestorePurchase = didFailedRestorePurchase
     }
     
     open func updateProductsActive() {
@@ -74,7 +96,7 @@ open class PurchaseService: PurchaseHelper {
             guard let self = self else { return }
             
             guard error == nil else {
-                self.provideError(error)
+                self.didFailedFetchProducts?(self.makeErrorObjectify(error))
                 return
             }
             var productsItems: [ACPurchases] = []
@@ -95,8 +117,7 @@ open class PurchaseService: PurchaseHelper {
 
             self.products = productsItems
             print("products productsItems - \(productsItems) is \(productsItems.map({ $0.skProduct.productIdentifier }))")
-
-            self.output?.reload(self)
+            self.didProductsListUpdated?(self.products)
         }
     }
     
@@ -105,7 +126,7 @@ open class PurchaseService: PurchaseHelper {
             guard let self = self else { return }
             
             guard error == nil else {
-                self.provideError(error)
+                self.didFailedBuyPurchase?(self.makeErrorObjectify(error))
                 return
             }
             
@@ -113,12 +134,13 @@ open class PurchaseService: PurchaseHelper {
                 guard let self = self else { return }
                 
                 guard error == nil else {
-                    self.provideError(error)
+                    self.didFailedFetchProducts?(self.makeErrorObjectify(error))
                     return
                 }
                 
                 self.updateProductsActive()
-                self.output?.purchase(self)
+                //self.didProductPurchased?()
+                self.didProductsListUpdated?(self.products)
             }
         }
     }
@@ -130,7 +152,7 @@ open class PurchaseService: PurchaseHelper {
             guard let self = self else { return }
             
             guard error == nil else {
-                self.provideError(error)
+                self.didFailedRestorePurchase?(self.makeErrorObjectify(error))
                 return
             }
             
@@ -138,12 +160,13 @@ open class PurchaseService: PurchaseHelper {
                 guard let self = self else { return }
                 
                 guard error == nil else {
-                    self.provideError(error)
+                    self.didFailedRestorePurchase?(self.makeErrorObjectify(error))
                     return
                 }
                 
                 self.updateProductsActive()
-                self.output?.restore(self)
+                //self.didProductsRestored?()
+                self.didProductsListUpdated?(self.products)
             }
         }
     }
