@@ -11,7 +11,7 @@ import Foundation
 final class SubscriptionsViewModel {
     
     // MARK: - Params
-    var service: PurchaseService = PurchaseService(sharedSecretKey: AppConfiguration.sharedSecretKey, products: products)
+    var service: PurchaseService
     var selectedProduct: ACPurchases?
     
     // MARK: - Callbacks
@@ -24,7 +24,7 @@ final class SubscriptionsViewModel {
     }
     
     init() {
-        self.service = PurchaseService(sharedSecretKey: AppConfiguration.sharedSecretKey, products: SubscriptionsViewModel.products)
+        self.service = PurchaseService(products: SubscriptionsViewModel.products, sharedSecretKey: AppConfiguration.sharedSecretKey)
     }
     
     func reload() {

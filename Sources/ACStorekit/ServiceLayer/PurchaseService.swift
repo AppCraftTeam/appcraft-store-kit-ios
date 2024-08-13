@@ -28,10 +28,11 @@ open class PurchaseService: PurchaseHelper {
     // paymentCancelled
     private let notProvidesErrorCodes: [Int] = [2]
     
-    public static let current = PurchaseService(sharedSecretKey: "", products: [])
+    public static let current = PurchaseService(products: [], sharedSecretKey: "")
+    public var validationType: ReceiptValidationType = .manual
     
-    public init(sharedSecretKey: String, products: Set<ACProductTypeItem>) {
-        super.init(productIdentifiers: products, sharedSecretKey: sharedSecretKey)
+    public init(products: Set<ACProductTypeItem>, sharedSecretKey: String) {
+        super.init(productIdentifiers: products, sharedSecretKey: sharedSecretKey, keyReceiptMaxExpiresDate: "keyReceiptMaxExpiresDate")
     }
     
     deinit {
@@ -122,16 +123,15 @@ open class PurchaseService: PurchaseHelper {
         return true
     }
     
-    #warning("todo return receipt data")
-    open func fetchReceipt(callback: @escaping (Result<Void, Error>) -> Void) {
-        self.receiptProductRequest.start { [weak self] _, error in
+    open func fetchReceipt(validationType: ReceiptValidationType, callback: @escaping (Result<Data?, Error>) -> Void) {
+        self.receiptProductRequest.start(validationType: validationType) { [weak self] data, error in
             guard let self = self else { return }
             if let error = error {
                 callback(.failure(error))
                 return
             }
             
-            callback(.success(()))
+            callback(.success((data.receipt)))
         }
     }
     
@@ -144,9 +144,9 @@ open class PurchaseService: PurchaseHelper {
                 return
             }
             
-            self.fetchReceipt { result in
+            self.fetchReceipt(validationType: self.validationType) { result in
                 switch result {
-                case .success():
+                case let .success(receipt):
                     self.updateProductsActiveStatus()
                     self.didProductPurchased?(self.products.getActiveProducts())
                     self.didProductsListUpdated?(self.products)
@@ -168,9 +168,9 @@ open class PurchaseService: PurchaseHelper {
                 return
             }
             
-            self.fetchReceipt { result in
+            self.fetchReceipt(validationType: self.validationType) { result in
                 switch result {
-                case .success():
+                case let .success(receipt):
                     self.updateProductsActiveStatus()
                     self.didProductsRestored?(self.products)
                     self.didProductsListUpdated?(self.products)

@@ -9,6 +9,9 @@ import Foundation
 import StoreKit
 
 open class ReceiptService: NSObject {
+    
+    private(set) public var receiptData: Data?
+    
     private var receiptRefreshRequest: SKReceiptRefreshRequest?
     private var countReceiptRefreshRequest: Int = 0
     private let maxCountReceiptRefreshRequest: Int = 4
@@ -41,6 +44,7 @@ open class ReceiptService: NSObject {
         
         do {
             let receiptData = try Data(contentsOf: receiptURL, options: .alwaysMapped)
+            self.receiptData = receiptData
             completion(.success(receiptData))
         } catch {
             completion(.failure(error))

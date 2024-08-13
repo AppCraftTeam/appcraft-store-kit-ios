@@ -8,7 +8,7 @@
 import Foundation
 
 open class ReceiptUpdateService {
-    public let keyReceiptMaxExpiresDate: String
+    private let keyReceiptMaxExpiresDate: String
     
     public init(keyReceiptMaxExpiresDate: String) {
         self.keyReceiptMaxExpiresDate = keyReceiptMaxExpiresDate
