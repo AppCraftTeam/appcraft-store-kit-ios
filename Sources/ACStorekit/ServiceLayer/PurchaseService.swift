@@ -29,7 +29,7 @@ open class PurchaseService: PurchaseHelper {
     private let notProvidesErrorCodes: [Int] = [2]
     
     public static let current = PurchaseService(products: [], sharedSecretKey: "")
-    public var validationType: ReceiptValidationType = .manual
+    public var validationType: ReceiptValidationType = .apple
     
     public init(products: Set<ACProductTypeItem>, sharedSecretKey: String) {
         super.init(productIdentifiers: products, sharedSecretKey: sharedSecretKey, keyReceiptMaxExpiresDate: "keyReceiptMaxExpiresDate")

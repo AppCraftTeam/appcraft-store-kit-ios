@@ -11,7 +11,9 @@ import Foundation
 final class SubscriptionsViewModel {
     
     // MARK: - Params
-    var service: PurchaseService
+    var purchaseService: PurchaseService
+    var remoteService: MockupRemoteService
+    
     var selectedProduct: ACPurchases?
     
     // MARK: - Callbacks
@@ -24,14 +26,16 @@ final class SubscriptionsViewModel {
     }
     
     init() {
-        self.service = PurchaseService(products: SubscriptionsViewModel.products, sharedSecretKey: AppConfiguration.sharedSecretKey)
+        self.purchaseService = PurchaseService(products: SubscriptionsViewModel.products, sharedSecretKey: AppConfiguration.sharedSecretKey)
+        self.remoteService = MockupRemoteService(purchaseService: self.purchaseService)
     }
     
     func reload() {
         self.didBeginLoading?()
         
-        self.service.setupCallbacks(
+        self.purchaseService.setupCallbacks(
             didProductsListUpdated: { products in
+                print("selectedProduct - \(products.map({ $0.expiresDate }))")
                 DispatchQueue.main.async { [weak self] in
                     self?.selectedProduct = products.first(where: { $0.skProduct.isSubscription })
                     self?.didProductsLoaded?()
@@ -41,18 +45,11 @@ final class SubscriptionsViewModel {
             },
             didProductPurchased: {  products in
                 print("didProductPurchased - \(products.map({ $0.debugDescription }))")
-                DispatchQueue.main.async { [weak self] in
-                    self?.didProductsLoaded?()
-                    self?.didStopLoading?()
-                }
-                
+                self.validateReceipt()
             },
             didProductsRestored: { products in
                 print("didProductsRestored - \(products.map({ $0.debugDescription }))")
-                DispatchQueue.main.async { [weak self] in
-                    self?.didProductsLoaded?()
-                    self?.didStopLoading?()
-                }
+                self.validateReceipt()
             },
             didFailedFetchProducts: { error in
                 print("didFailedFetchProducts - \(String(describing: error?.localizedDescription))")
@@ -74,6 +71,39 @@ final class SubscriptionsViewModel {
             }
         )
         
-        self.service.loadProducts()
+        self.purchaseService.loadProducts()
+    }
+}
+
+private extension SubscriptionsViewModel {
+    
+    func validateReceipt() {
+        self.purchaseService.fetchReceipt(validationType: .manual) { result in
+            print("result - \(result)")
+            switch result {
+            case let .success(data):
+                    if let data = data {
+                        self.remoteService.validateReceipt(data) { purchasedProducts in
+                            print("purchasedProducts - \(purchasedProducts)")
+                            DispatchQueue.main.async { [weak self] in
+                                self?.didProductsLoaded?()
+                                self?.didStopLoading?()
+                            }
+                        }
+                    } else {
+                        print("failed fetch receipt")
+                        DispatchQueue.main.async { [weak self] in
+                            self?.didProductsLoaded?()
+                            self?.didStopLoading?()
+                        }
+                    }
+            case let .failure(error):
+                print("failed fetch receipt - \(String(describing: error.localizedDescription))")
+                DispatchQueue.main.async { [weak self] in
+                    self?.didProductsLoaded?()
+                    self?.didStopLoading?()
+                }
+            }
+        }
     }
 }

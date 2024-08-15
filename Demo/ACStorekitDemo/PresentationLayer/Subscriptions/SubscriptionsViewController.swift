@@ -126,14 +126,14 @@ private extension SubscriptionsViewController {
     func purchaseButtonTapped() {
         if let product = model.selectedProduct {
             setLoadingState(isLoading: true)
-            model.service.purchase(product.skProduct)
+            model.purchaseService.purchase(product.skProduct)
         }
     }
     
     @objc
     func restoreButtonTapped() {
         setLoadingState(isLoading: true)
-        model.service.restore()
+        model.purchaseService.restore()
     }
 }
 
@@ -141,14 +141,14 @@ private extension SubscriptionsViewController {
 extension SubscriptionsViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        model.service.products.filter({ $0.skProduct.isSubscription }).count
+        model.purchaseService.products.filter({ $0.skProduct.isSubscription }).count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cell")
         cell.selectionStyle = .none
         
-        let product = model.service.products[indexPath.row]
+        let product = model.purchaseService.products[indexPath.row]
         
         let isSelected = model.selectedProduct?.product.productIdentifer ==  product.product.productIdentifer
         cell.accessoryType = isSelected ? .checkmark : .none
@@ -161,7 +161,7 @@ extension SubscriptionsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let product = model.service.products[indexPath.row]
+        let product = model.purchaseService.products[indexPath.row]
         model.selectedProduct = product
         purchaseButton.isUserInteractionEnabled = model.selectedProduct != nil
         tableView.reloadData()
@@ -172,7 +172,7 @@ extension SubscriptionsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        let activeProducts = model.service.products.getActiveProducts()
+        let activeProducts = model.purchaseService.products.getActiveProducts()
         if activeProducts.isEmpty {
             return nil
         }

@@ -38,14 +38,11 @@ extension PaymentProductRequest: SKPaymentTransactionObserver {
                  .restored:
                 self.completion?(transaction, nil)
                 SKPaymentQueue.default().finishTransaction(transaction)
-                
             case .failed:
                 self.completion?(nil, transaction.error)
                 SKPaymentQueue.default().finishTransaction(transaction)
-                
             case .purchasing:
                 break
-                
             default:
                 self.completion?(nil, nil)
                 break

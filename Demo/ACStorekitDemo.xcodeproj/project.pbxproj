@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9512B43A2C49446E00B87E78 /* AppPurchases.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9512B4392C49446E00B87E78 /* AppPurchases.swift */; };
+		95A373442C6B73EE00EFBE4C /* MockupServerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A373432C6B73EE00EFBE4C /* MockupServerService.swift */; };
 		95D584162C4906A700783B07 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D584152C4906A700783B07 /* AppDelegate.swift */; };
 		95D584182C4906A700783B07 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D584172C4906A700783B07 /* SceneDelegate.swift */; };
 		95D5841F2C4906A900783B07 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 95D5841E2C4906A900783B07 /* Assets.xcassets */; };
@@ -23,6 +24,7 @@
 /* Begin PBXFileReference section */
 		9512B4392C49446E00B87E78 /* AppPurchases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPurchases.swift; sourceTree = "<group>"; };
 		9542A1292C4A6AF1001B78DA /* MainStoreKitConfigurationFile.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = MainStoreKitConfigurationFile.storekit; sourceTree = "<group>"; };
+		95A373432C6B73EE00EFBE4C /* MockupServerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockupServerService.swift; sourceTree = "<group>"; };
 		95D584122C4906A700783B07 /* ACStorekitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ACStorekitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		95D584152C4906A700783B07 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		95D584172C4906A700783B07 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -50,6 +52,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		95A373452C6B747F00EFBE4C /* ServiceLayer */ = {
+			isa = PBXGroup;
+			children = (
+				95A373432C6B73EE00EFBE4C /* MockupServerService.swift */,
+			);
+			path = ServiceLayer;
+			sourceTree = "<group>";
+		};
 		95D584092C4906A700783B07 = {
 			isa = PBXGroup;
 			children = (
@@ -77,6 +87,7 @@
 				95D584312C49106A00783B07 /* ExtensionLayer */,
 				95D584302C49106400783B07 /* PresentationLayer */,
 				95D5842F2C49105D00783B07 /* SupportLayer */,
+				95A373452C6B747F00EFBE4C /* ServiceLayer */,
 			);
 			path = ACStorekitDemo;
 			sourceTree = "<group>";
@@ -227,6 +238,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				95D584392C49116800783B07 /* SubscriptionsViewModel.swift in Sources */,
+				95A373442C6B73EE00EFBE4C /* MockupServerService.swift in Sources */,
 				95D584412C491E5300783B07 /* AppConfiguration.swift in Sources */,
 				9512B43A2C49446E00B87E78 /* AppPurchases.swift in Sources */,
 				95D584372C49115D00783B07 /* SubscriptionsViewController.swift in Sources */,
