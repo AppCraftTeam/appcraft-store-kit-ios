@@ -2,29 +2,24 @@ import Foundation
 import StoreKit
 
 open class PaymentProductRequest: NSObject {
-    public typealias Completion = (SKPaymentTransaction?, Error?) -> Void
+    public typealias Completion = (Result<SKPaymentTransaction, Error>) -> Void
     
     private var completion: Completion?
     
-    open func puschase(product: SKProduct, _ completion: Completion?) {
-        guard self.completion == nil else { return }
+    open func purchase(product: SKProduct, _ completion: Completion?) {
         self.completion = completion
-
-        SKPaymentQueue.default().add(self)
-        SKPaymentQueue.default().add(.init(product: product))
+        
+        let paymentQueue = SKPaymentQueue.default()
+        paymentQueue.add(self)
+        paymentQueue.add(SKPayment(product: product))
     }
     
     open func restore(_ completion: Completion?) {
-        guard self.completion == nil else { return }
         self.completion = completion
         
-        SKPaymentQueue.default().add(self)
-        SKPaymentQueue.default().restoreCompletedTransactions()
-    }
-    
-    private func finish(result: SKPaymentTransaction?, error: Error?) {
-        self.completion?(result, error)
-        self.completion = nil
+        let paymentQueue = SKPaymentQueue.default()
+        paymentQueue.add(self)
+        paymentQueue.restoreCompletedTransactions()
     }
 }
 
@@ -33,20 +28,31 @@ extension PaymentProductRequest: SKPaymentTransactionObserver {
     public func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         for transaction in transactions {
             switch transaction.transactionState {
-            
-            case .purchased,
-                 .restored:
-                self.completion?(transaction, nil)
-                SKPaymentQueue.default().finishTransaction(transaction)
+            case .purchased, .restored:
+                finish(result: .success(transaction))
             case .failed:
-                self.completion?(nil, transaction.error)
-                SKPaymentQueue.default().finishTransaction(transaction)
-            case .purchasing:
-                break
+                if let error = transaction.error {
+                    finish(result: .failure(error))
+                } else {
+                    finish(result: .failure(NSError(domain: "UnknownError", code: -1, userInfo: nil)))
+                }
             default:
-                self.completion?(nil, nil)
                 break
             }
+            
+            if transaction.transactionState != .purchasing {
+                SKPaymentQueue.default().finishTransaction(transaction)
+            }
         }
+    }
+}
+
+private extension PaymentProductRequest {
+    
+    func finish(result: Result<SKPaymentTransaction, Error>) {
+        completion?(result)
+        completion = nil
+        
+        SKPaymentQueue.default().remove(self)
     }
 }

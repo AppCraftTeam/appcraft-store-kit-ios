@@ -29,7 +29,7 @@ open class PurchaseHelper {
         UserDefaults.standard.object(forKey: self.keyReceiptMaxExpiresDate) as? Date
     }
     
-    open func purchaseAvalible() -> Bool {
+    open func purchaseAvailable() -> Bool {
         guard let date = self.getReceiptMaxExpiresDate() else { return false }
         return date > .init()
     }

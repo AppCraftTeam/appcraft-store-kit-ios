@@ -2,7 +2,7 @@ import Foundation
 import StoreKit
 
 open class LoadProductsRequest: NSObject {
-    public typealias Completion = ([SKProduct], Error?) -> Void
+    public typealias Completion = (Result<[SKProduct], Error>) -> Void
     
     private let productIdentifiers: Set<ACProductTypeItem>
     private var productsRequest: SKProductsRequest?
@@ -10,37 +10,39 @@ open class LoadProductsRequest: NSObject {
     
     public init(productIdentifiers: Set<ACProductTypeItem>) {
         self.productIdentifiers = productIdentifiers
-    }
-    deinit {
-        print("deinit LoadProductsRequest")
-    }
-    open func start(_ completion: Completion?) {
-        self.productsRequest?.cancel()
-        
-        let ids = self.productIdentifiers.map({ $0.product.productIdentifer })
-        self.productsRequest = .init(productIdentifiers: Set(ids))
-        self.completion = completion
-        
-        self.productsRequest?.delegate = self
-        self.productsRequest?.start()
+        super.init()
     }
     
-    private func finish(result: [SKProduct], error: Error?) {
-        self.completion?(result, error)
-        self.completion = nil
+    open func start(_ completion: Completion?) {
+        productsRequest?.cancel()
         
-        self.productsRequest?.cancel()
-        self.productsRequest = nil
+        let identifiers = productIdentifiers.map { $0.product.productIdentifer }
+        self.productsRequest = SKProductsRequest(productIdentifiers: Set(identifiers))
+        self.completion = completion
+        
+        productsRequest?.delegate = self
+        productsRequest?.start()
     }
 }
 
 extension LoadProductsRequest: SKProductsRequestDelegate {
-
+    
     public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
-        self.finish(result: response.products, error: nil)
+        finish(result: .success(response.products))
     }
-
+    
     public func request(_ request: SKRequest, didFailWithError error: Error) {
-        self.finish(result: [], error: error)
+        finish(result: .failure(error))
+    }
+}
+
+private extension LoadProductsRequest {
+    
+    func finish(result: Result<[SKProduct], Error>) {
+        completion?(result)
+        completion = nil
+        
+        productsRequest?.cancel()
+        productsRequest = nil
     }
 }

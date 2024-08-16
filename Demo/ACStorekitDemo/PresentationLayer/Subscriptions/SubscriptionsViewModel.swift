@@ -31,72 +31,67 @@ final class SubscriptionsViewModel {
     }
     
     func reload() {
+        self.setup()
         self.didBeginLoading?()
-        
-        self.purchaseService.setupCallbacks(
-            didProductsListUpdated: { products in
-                print("selectedProduct - \(products.map({ $0.expiresDate }))")
-                DispatchQueue.main.async { [weak self] in
-                    self?.selectedProduct = products.first(where: { $0.skProduct.isSubscription })
-                    self?.didProductsLoaded?()
-                    self?.didStopLoading?()
-                }
-                
-            },
-            didProductPurchased: {  products in
-                print("didProductPurchased - \(products.map({ $0.debugDescription }))")
-                self.validateReceipt()
-            },
-            didProductsRestored: { products in
-                print("didProductsRestored - \(products.map({ $0.debugDescription }))")
-                self.validateReceipt()
-            },
-            didFailedFetchProducts: { error in
-                print("didFailedFetchProducts - \(String(describing: error?.localizedDescription))")
-                DispatchQueue.main.async { [weak self] in
-                    self?.didStopLoading?()
-                }
-            },
-            didFailedBuyPurchase: { error in
-                print("didFailedBuyPurchase - \(String(describing: error?.localizedDescription))")
-                DispatchQueue.main.async { [weak self] in
-                    self?.didStopLoading?()
-                }
-            },
-            didFailedRestorePurchase: { error in
-                print("didFailedRestorePurchase - \(String(describing: error?.localizedDescription))")
-                DispatchQueue.main.async { [weak self] in
-                    self?.didStopLoading?()
-                }
-            }
-        )
-        
         self.purchaseService.loadProducts()
     }
 }
 
 private extension SubscriptionsViewModel {
     
+    func setup() {
+        self.purchaseService.setupCallbacks(
+            didUpdateProductsList: { [weak self] result in
+                switch result {
+                case let .success(products):
+                    print("selectedProduct - \(products.map({ $0.expiresDate }))")
+                    self?.selectedProduct = products.first(where: { $0.skProduct.isSubscription })
+                    self?.didProductsLoaded?()
+                    self?.didStopLoading?()
+                case let .failure(error):
+                    print("didFailedFetchProducts - \(error.localizedDescription))")
+                    self?.didStopLoading?()
+                }
+            },
+            didCompletePurchase: { [weak self] result in
+                switch result {
+                case let .success(products):
+                    print("didProductPurchased - \(products.map({ $0.debugDescription }))")
+                    self?.validateReceipt()
+                case let .failure(error):
+                    if !error.isCancelled {
+                        print("didFailedBuyPurchase - \(error.localizedDescription))")
+                    }
+                    self?.didStopLoading?()
+                }
+            },
+            didRestorePurchases: { [weak self] result in
+                switch result {
+                case let .success(products):
+                    print("didProductsRestored - \(products.map({ $0.debugDescription }))")
+                    self?.validateReceipt()
+                case let .failure(error):
+                    if !error.isCancelled {
+                        print("didFailedRestorePurchase - \(error.localizedDescription))")
+                    }
+                    self?.didStopLoading?()
+                }
+            }
+        )
+    }
+    
     func validateReceipt() {
         self.purchaseService.fetchReceipt(validationType: .manual) { result in
             print("result - \(result)")
             switch result {
             case let .success(data):
-                    if let data = data {
-                        self.remoteService.validateReceipt(data) { purchasedProducts in
-                            print("purchasedProducts - \(purchasedProducts)")
-                            DispatchQueue.main.async { [weak self] in
-                                self?.didProductsLoaded?()
-                                self?.didStopLoading?()
-                            }
-                        }
-                    } else {
-                        print("failed fetch receipt")
-                        DispatchQueue.main.async { [weak self] in
-                            self?.didProductsLoaded?()
-                            self?.didStopLoading?()
-                        }
+                self.remoteService.validateReceipt(data) { purchasedProducts in
+                    print("purchasedProducts - \(String(describing: purchasedProducts))")
+                    DispatchQueue.main.async { [weak self] in
+                        self?.didProductsLoaded?()
+                        self?.didStopLoading?()
                     }
+                }
             case let .failure(error):
                 print("failed fetch receipt - \(String(describing: error.localizedDescription))")
                 DispatchQueue.main.async { [weak self] in
