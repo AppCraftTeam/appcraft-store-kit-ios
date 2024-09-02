@@ -8,22 +8,24 @@
 import Foundation
 
 open class ReceiptUpdateService {
+    public typealias Completion = (Result<Set<ProductExpiredInfo>, Error>) -> Void
+
     private let keyReceiptMaxExpiresDate: String
     
     public init(keyReceiptMaxExpiresDate: String) {
         self.keyReceiptMaxExpiresDate = keyReceiptMaxExpiresDate
     }
     
-    open func updateReceiptInfo(with json: [String: Any], completion: @escaping (Error?) -> Void) {
+    open func updateReceiptInfo(with json: [String: Any], completion: @escaping Completion) {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss VV"
         
         guard let receipts = json["latest_receipt_info"] as? [[String: Any]] else {
-            completion(nil)
+            completion(.failure(NSError(domain: "Failed fet receipt info", code: -1)))
             return
         }
-        
-        var expiresDates: [Date] = []
+
+        var expiresInfo: Set<ProductExpiredInfo> = []
         
         for receipt in receipts {
             guard
@@ -33,13 +35,13 @@ open class ReceiptUpdateService {
             else { continue }
             
             if expiresDateDt > Date() {
-                expiresDates.append(expiresDateDt)
-                UserDefaults.standard.set(expiresDateDt, forKey: productID)
+                expiresInfo.insert(ProductExpiredInfo(productId: productID, date: expiresDateDt))
+                // UserDefaults.standard.set(expiresDateDt, forKey: productID)
             }
         }
         
-        updateMaxExpiresDate(of: expiresDates)
-        completion(nil)
+        updateMaxExpiresDate(of: expiresInfo.map({ $0.date }))
+        completion(.success(expiresInfo))
     }
     
     private func updateMaxExpiresDate(of dates: [Date]) {

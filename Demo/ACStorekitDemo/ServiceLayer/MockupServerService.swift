@@ -17,16 +17,18 @@ final class MockupRemoteService {
     }
     
     // In a real case, this is all done by the server, but for the example, we'll do the validation process ourselves
-    func validateReceipt(_ receipt: Data, competition: ((_ purchasedProducts: [String]?) -> Void)?) {
+    func validateReceipt(_ info: ReceiptProductInfo, competition: ((_ purchasedProducts: Set<ProductExpiredInfo>?) -> Void)?) {
+        // Recipe would be sent to the server
+        // let receipt = info.receipt
+        print("validateReceipt....")
         purchaseService.fetchReceipt(validationType: .apple) { result in
             switch result {
-            case .success:
-                let activeProducts = self.purchaseService.products.getActiveProducts()
-                print("activeProductsss - \(activeProducts.map({ $0.product.productIdentifer }))")
-                competition?(activeProducts.map({ $0.product.productIdentifer }))
+            case let .success(data):
+                print("expiredInfo - \(data.expiredInfo)")
+                competition?(data.expiredInfo)
             case let .failure(error):
                 print("failed fetch receipt - \(String(describing: error.localizedDescription))")
-                competition?([])
+                competition?(nil)
             }
         }
     }

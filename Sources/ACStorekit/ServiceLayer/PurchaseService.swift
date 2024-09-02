@@ -12,7 +12,6 @@ open class PurchaseService: PurchaseHelper {
     private(set) public var products: [ACPurchases] = [] {
         didSet {
             products.sortDefault()
-            updateProductsActiveStatus()
         }
     }
     
@@ -33,17 +32,7 @@ open class PurchaseService: PurchaseHelper {
         self.didCompletePurchase = didCompletePurchase
         self.didRestorePurchases = didRestorePurchases
     }
-    
-    open func updateProductsActiveStatus() {
-        guard purchaseAvailable() else { return }
-        products.forEach { product in
-            let expiresDate = getProductExpiresDateFromLocal(product.skProduct)
-            let isActive = isActiveProduct(product.skProduct)
-            product.updateActive(isActive, expiresDate: expiresDate)
-        }
-        print("updateProductsActiveStatus productsItems - \(products.map { $0.debugDescription })")
-    }
-    
+
     open func loadProducts() {
         print("loadProducts... \(productIdentifiers)")
         loadProductsRequest.start { [weak self] result in
@@ -58,8 +47,19 @@ open class PurchaseService: PurchaseHelper {
         }
     }
     
-    open func fetchReceipt(validationType: ReceiptValidationType, callback: @escaping (Result<Data, Error>) -> Void) {
+    open func fetchReceipt(validationType: ReceiptValidationType, callback: @escaping (Result<ReceiptProductInfo, Error>) -> Void) {
         receiptProductRequest.start(validationType: validationType) { result in
+            print("fetchReceipt result result - \(result)")
+            switch result {
+            case let .success(data):
+                data.expiredInfo.forEach({ info in
+                    self.products
+                        .first(where: { $0.product.productIdentifer == info.productId })?
+                        .saveExpiresDate(info.date)
+                })
+            case .failure:
+                break
+            }
             callback(result)
         }
     }
@@ -102,15 +102,10 @@ private extension PurchaseService {
         let arr = Array(productIdentifiers)
         
         for sdkProduct in products {
-            let expiresDate = getProductExpiresDateFromLocal(sdkProduct)
-            let isActive = isActiveProduct(sdkProduct)
-            
             if let info = arr.getProduct(for: sdkProduct.productIdentifier) {
                 productsItems.append(ACPurchases(
                     product: info,
-                    skProduct: sdkProduct,
-                    expiresDate: expiresDate,
-                    isActive: isActive
+                    skProduct: sdkProduct
                 ))
             }
         }
@@ -126,7 +121,6 @@ private extension PurchaseService {
             
             switch result {
             case let .success(receipt):
-                self.updateProductsActiveStatus()
                 self.didCompletePurchase?(.success(self.products.getActiveProducts()))
                 self.didUpdateProductsList?(.success(self.products))
             case let .failure(error):
@@ -141,24 +135,11 @@ private extension PurchaseService {
             
             switch result {
             case let .success(receipt):
-                self.updateProductsActiveStatus()
                 self.didRestorePurchases?(.success(self.products))
                 self.didUpdateProductsList?(.success(self.products))
             case let .failure(error):
                 self.didRestorePurchases?(.failure(error))
             }
         }
-    }
-    
-    func isActiveProduct(_ product: SKProduct) -> Bool {
-        let nowDate = Date()
-        guard
-            isActiveProductExpiresDateFromLocal(product, nowDate: nowDate),
-            let expiresDate = getProductExpiresDateFromLocal(product),
-            expiresDate > nowDate
-        else {
-            return false
-        }
-        return true
     }
 }

@@ -16,15 +16,6 @@ open class PurchaseHelper {
         self.keyReceiptMaxExpiresDate = keyReceiptMaxExpiresDate
     }
     
-    open func isActiveProductExpiresDateFromLocal(_ product: SKProduct, nowDate: Date) -> Bool {
-        guard let date = self.getProductExpiresDateFromLocal(product) else { return false }
-        return date > nowDate
-    }
-    
-    open func getProductExpiresDateFromLocal(_ product: SKProduct) -> Date? {
-        UserDefaults.standard.object(forKey: product.productIdentifier) as? Date
-    }
-    
     open func getReceiptMaxExpiresDate() -> Date? {
         UserDefaults.standard.object(forKey: self.keyReceiptMaxExpiresDate) as? Date
     }

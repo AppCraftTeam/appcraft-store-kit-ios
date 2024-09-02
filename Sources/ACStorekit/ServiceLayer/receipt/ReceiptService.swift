@@ -52,6 +52,7 @@ open class ReceiptService: NSObject {
     }
     
     private func refreshReceipt() {
+        print("refreshReceipt....")
         countReceiptRefreshRequest += 1
         
         receiptRefreshRequest = SKReceiptRefreshRequest()

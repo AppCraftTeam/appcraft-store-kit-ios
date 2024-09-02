@@ -44,13 +44,17 @@ private extension SubscriptionsViewModel {
             didUpdateProductsList: { [weak self] result in
                 switch result {
                 case let .success(products):
-                    print("selectedProduct - \(products.map({ $0.expiresDate }))")
-                    self?.selectedProduct = products.first(where: { $0.skProduct.isSubscription })
-                    self?.didProductsLoaded?()
-                    self?.didStopLoading?()
+                    DispatchQueue.main.async { [weak self] in
+                        print("selectedProduct - \(products.map({ $0.productExpiresDateFromLocal }))")
+                        self?.selectedProduct = products.first(where: { $0.skProduct.isSubscription })
+                        self?.didProductsLoaded?()
+                        self?.didStopLoading?()
+                    }
                 case let .failure(error):
                     print("didFailedFetchProducts - \(error.localizedDescription))")
-                    self?.didStopLoading?()
+                    DispatchQueue.main.async { [weak self] in
+                        self?.didStopLoading?()
+                    }
                 }
             },
             didCompletePurchase: { [weak self] result in
@@ -62,7 +66,9 @@ private extension SubscriptionsViewModel {
                     if !error.isCancelled {
                         print("didFailedBuyPurchase - \(error.localizedDescription))")
                     }
-                    self?.didStopLoading?()
+                    DispatchQueue.main.async { [weak self] in
+                        self?.didStopLoading?()
+                    }
                 }
             },
             didRestorePurchases: { [weak self] result in
@@ -74,7 +80,9 @@ private extension SubscriptionsViewModel {
                     if !error.isCancelled {
                         print("didFailedRestorePurchase - \(error.localizedDescription))")
                     }
-                    self?.didStopLoading?()
+                    DispatchQueue.main.async { [weak self] in
+                        self?.didStopLoading?()
+                    }
                 }
             }
         )
@@ -87,6 +95,13 @@ private extension SubscriptionsViewModel {
             case let .success(data):
                 self.remoteService.validateReceipt(data) { purchasedProducts in
                     print("purchasedProducts - \(String(describing: purchasedProducts))")
+                    
+                    (purchasedProducts ?? []).forEach({ info in
+                        self.purchaseService.products
+                            .first(where: { $0.product.productIdentifer == info.productId })?
+                            .saveExpiresDate(info.date)
+                    })
+                    
                     DispatchQueue.main.async { [weak self] in
                         self?.didProductsLoaded?()
                         self?.didStopLoading?()

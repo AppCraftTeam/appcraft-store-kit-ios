@@ -176,7 +176,15 @@ extension SubscriptionsViewController: UITableViewDataSource {
         if activeProducts.isEmpty {
             return nil
         }
-        let activeProductsInfoText = activeProducts.map({ $0.skProduct.productIdentifier + ": \(String(describing: $0.expiresDate))" }).joined(separator: ", ")
+        
+        let activeProductsInfoText = activeProducts
+            .map({
+                if let date = $0.productExpiresDateFromLocal {
+                    return $0.skProduct.productIdentifier + ": \(date)"
+                }
+                return $0.skProduct.productIdentifier
+            })
+            .joined(separator: ", ")
         return "Active subscription: \(activeProductsInfoText)"
     }
 }

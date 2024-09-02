@@ -12,31 +12,50 @@ import StoreKit
 public protocol ACPurchaseType {
     var product: ACProduct { get }
     var skProduct: SKProduct { get }
+    var isActiveProduct: Bool { get }
+    var productExpiresDateFromLocal: Date?  { get }
+    
+    func saveExpiresDate(_ date: Date?)
 }
 
-open class ACPurchases: ACPurchaseType, Hashable {
+open class ACPurchases: ACPurchaseType {
     public var product: ACProduct
     public var skProduct: SKProduct
-    private(set) public var expiresDate: Date?
-    private(set) public var isActive: Bool
     
     public var debugDescription: String {
-        "[ACPurchase] ID: \(skProduct.productIdentifier), isActive: \(isActive), expiresDate: \(expiresDate)\n"
+        "[ACPurchase] ID: \(skProduct.productIdentifier), isActive: \(isActiveProduct), expiresDate: \(productExpiresDateFromLocal)\n"
     }
     
-    public init(product: ACProduct, skProduct: SKProduct, expiresDate: Date? = nil, isActive: Bool = false) {
+    public init(product: ACProduct, skProduct: SKProduct) {
         self.product = product
         self.skProduct = skProduct
-        self.expiresDate = expiresDate
-        self.isActive = isActive
     }
     
-    public func updateActive(_ isActive: Bool, expiresDate: Date?) {
-        self.isActive = isActive
-        self.expiresDate = expiresDate
+    public var isActiveProduct: Bool {
+        guard let expiresDate = productExpiresDateFromLocal else {
+            return false
+        }
+        return expiresDate > Date()
     }
     
-    public static func == (lhs: ACPurchases, rhs: ACPurchases) -> Bool {
+    public var productExpiresDateFromLocal: Date? {
+        UserDefaults.standard.object(forKey: self.product.productIdentifer) as? Date
+    }
+    
+    public func saveExpiresDate(_ date: Date?) {
+        print("saveExpiresDate date \(date) for \(self.product.productIdentifer)")
+        if let date = date {
+            UserDefaults.standard.set(date, forKey: self.product.productIdentifer)
+        } else {
+            UserDefaults.standard.removeObject(forKey: self.product.productIdentifer)
+        }
+    }
+}
+
+// MARK: - Hashable
+extension ACPurchases: Hashable {
+    
+     static public func == (lhs: ACPurchases, rhs: ACPurchases) -> Bool {
         lhs.product.productIdentifer == rhs.product.productIdentifer
     }
     
@@ -56,6 +75,6 @@ public extension Array where Element == ACPurchases {
     }
     
     public func getActiveProducts() -> [ACPurchases] {
-        self.filter({ $0.isActive })
+        self.filter({ $0.isActiveProduct })
     }
 }
