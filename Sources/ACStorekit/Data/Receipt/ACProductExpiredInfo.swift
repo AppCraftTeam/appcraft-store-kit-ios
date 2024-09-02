@@ -1,5 +1,5 @@
 //
-//  ProductExpiredInfo.swift
+//  ACProductExpiredInfo.swift
 //
 //
 //  Created by Pavel Moslienko on 02.09.2024.
@@ -7,11 +7,11 @@
 
 import Foundation
 
-public struct ProductExpiredInfo: Hashable {
+public struct ACProductExpiredInfo: Hashable {
     public var productId: String
     public var date: Date
     
-    static public func == (lhs: ProductExpiredInfo, rhs: ProductExpiredInfo) -> Bool {
+    static public func == (lhs: ACProductExpiredInfo, rhs: ACProductExpiredInfo) -> Bool {
         lhs.productId == rhs.productId
     }
     

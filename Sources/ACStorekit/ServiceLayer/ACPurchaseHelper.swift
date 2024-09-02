@@ -1,18 +1,18 @@
 import StoreKit
 
-open class PurchaseHelper {
+open class ACPurchaseHelper {
     private let keyReceiptMaxExpiresDate: String
 
     public let productIdentifiers: Set<ACProductTypeItem>
-    public let loadProductsRequest: LoadProductsRequest
-    public let paymentProductsRequest: PaymentProductRequest
-    public let receiptProductRequest: ReceiptProductRequest
+    public let ACLoadProductsRequest: ACLoadProductsRequest
+    public let paymentProductsRequest: ACPaymentProductRequest
+    public let ACReceiptProductRequest: ACReceiptProductRequest
     
     public init(productIdentifiers: Set<ACProductTypeItem>, sharedSecretKey: String, keyReceiptMaxExpiresDate: String) {
         self.productIdentifiers = productIdentifiers
-        self.loadProductsRequest = .init(productIdentifiers: productIdentifiers)
+        self.ACLoadProductsRequest = .init(productIdentifiers: productIdentifiers)
         self.paymentProductsRequest = .init()
-        self.receiptProductRequest = .init(sharedSecretKey: sharedSecretKey, keyReceiptMaxExpiresDate: keyReceiptMaxExpiresDate)
+        self.ACReceiptProductRequest = .init(sharedSecretKey: sharedSecretKey, keyReceiptMaxExpiresDate: keyReceiptMaxExpiresDate)
         self.keyReceiptMaxExpiresDate = keyReceiptMaxExpiresDate
     }
     

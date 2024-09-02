@@ -1,5 +1,5 @@
 //
-//  ReceiptUpdateService.swift
+//  ACReceiptUpdateService.swift
 //
 //
 //  Created by Pavel Moslienko on 08.08.2024.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-open class ReceiptUpdateService {
-    public typealias Completion = (Result<Set<ProductExpiredInfo>, Error>) -> Void
+open class ACReceiptUpdateService {
+    public typealias Completion = (Result<Set<ACProductExpiredInfo>, Error>) -> Void
 
     private let keyReceiptMaxExpiresDate: String
     
@@ -25,7 +25,7 @@ open class ReceiptUpdateService {
             return
         }
 
-        var expiresInfo: Set<ProductExpiredInfo> = []
+        var expiresInfo: Set<ACProductExpiredInfo> = []
         
         for receipt in receipts {
             guard
@@ -35,7 +35,7 @@ open class ReceiptUpdateService {
             else { continue }
             
             if expiresDateDt > Date() {
-                expiresInfo.insert(ProductExpiredInfo(productId: productID, date: expiresDateDt))
+                expiresInfo.insert(ACProductExpiredInfo(productId: productID, date: expiresDateDt))
                 // UserDefaults.standard.set(expiresDateDt, forKey: productID)
             }
         }

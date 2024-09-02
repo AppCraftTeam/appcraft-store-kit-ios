@@ -1,7 +1,7 @@
 import Foundation
 import StoreKit
 
-open class PurchaseService: PurchaseHelper {
+open class ACPurchaseService: ACPurchaseHelper {
     
     // MARK: - Callbacks
     public var didUpdateProductsList: ((Result<[ACPurchases], Error>) -> Void)?
@@ -15,8 +15,8 @@ open class PurchaseService: PurchaseHelper {
         }
     }
     
-    public static let current = PurchaseService(products: [], sharedSecretKey: "")
-    public var validationType: ReceiptValidationType = .apple
+    public static let current = ACPurchaseService(products: [], sharedSecretKey: "")
+    public var validationType: ACReceiptValidationType = .apple
     
     
     public init(products: Set<ACProductTypeItem>, sharedSecretKey: String) {
@@ -35,7 +35,7 @@ open class PurchaseService: PurchaseHelper {
 
     open func loadProducts() {
         print("loadProducts... \(productIdentifiers)")
-        loadProductsRequest.start { [weak self] result in
+        ACLoadProductsRequest.start { [weak self] result in
             guard let self = self else { return }
             
             switch result {
@@ -47,8 +47,8 @@ open class PurchaseService: PurchaseHelper {
         }
     }
     
-    open func fetchReceipt(validationType: ReceiptValidationType, callback: @escaping (Result<ReceiptProductInfo, Error>) -> Void) {
-        receiptProductRequest.start(validationType: validationType) { result in
+    open func fetchReceipt(validationType: ACReceiptValidationType, callback: @escaping (Result<ACReceiptProductInfo, Error>) -> Void) {
+        ACReceiptProductRequest.start(validationType: validationType) { result in
             print("fetchReceipt result result - \(result)")
             switch result {
             case let .success(data):
@@ -95,7 +95,7 @@ open class PurchaseService: PurchaseHelper {
 
 // MARK: - Private Methods
 
-private extension PurchaseService {
+private extension ACPurchaseService {
     
     func handleLoadedProducts(_ products: [SKProduct]) {
         var productsItems: [ACPurchases] = []
@@ -103,10 +103,12 @@ private extension PurchaseService {
         
         for sdkProduct in products {
             if let info = arr.getProduct(for: sdkProduct.productIdentifier) {
-                productsItems.append(ACPurchases(
-                    product: info,
-                    skProduct: sdkProduct
-                ))
+                productsItems += [
+                    ACPurchases(
+                        product: info,
+                        skProduct: sdkProduct
+                    )
+                ]
             }
         }
         
@@ -122,7 +124,6 @@ private extension PurchaseService {
             switch result {
             case let .success(receipt):
                 self.didCompletePurchase?(.success(self.products.getActiveProducts()))
-                self.didUpdateProductsList?(.success(self.products))
             case let .failure(error):
                 self.didCompletePurchase?(.failure(error))
             }
@@ -136,7 +137,6 @@ private extension PurchaseService {
             switch result {
             case let .success(receipt):
                 self.didRestorePurchases?(.success(self.products))
-                self.didUpdateProductsList?(.success(self.products))
             case let .failure(error):
                 self.didRestorePurchases?(.failure(error))
             }

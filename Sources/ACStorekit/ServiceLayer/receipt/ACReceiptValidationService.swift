@@ -1,5 +1,5 @@
 //
-//  ReceiptValidationService.swift
+//  ACReceiptValidationService.swift
 //
 //
 //  Created by Pavel Moslienko on 08.08.2024.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-open class ReceiptValidationService {
+open class ACReceiptValidationService {
     private let sandboxVerifyUrl = URL(string: "https://sandbox.itunes.apple.com/verifyReceipt")!
     private let prodVerifyUrl = URL(string: "https://buy.itunes.apple.com/verifyReceipt")!
     private let sharedSecretKey: String

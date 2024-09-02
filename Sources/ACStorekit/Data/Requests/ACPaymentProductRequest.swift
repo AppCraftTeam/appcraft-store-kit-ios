@@ -1,7 +1,7 @@
 import Foundation
 import StoreKit
 
-open class PaymentProductRequest: NSObject {
+open class ACPaymentProductRequest: NSObject {
     public typealias Completion = (Result<SKPaymentTransaction, Error>) -> Void
     
     private var completion: Completion?
@@ -23,7 +23,7 @@ open class PaymentProductRequest: NSObject {
     }
 }
 
-extension PaymentProductRequest: SKPaymentTransactionObserver {
+extension ACPaymentProductRequest: SKPaymentTransactionObserver {
     
     public func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         for transaction in transactions {
@@ -47,7 +47,7 @@ extension PaymentProductRequest: SKPaymentTransactionObserver {
     }
 }
 
-private extension PaymentProductRequest {
+private extension ACPaymentProductRequest {
     
     func finish(result: Result<SKPaymentTransaction, Error>) {
         completion?(result)

@@ -10,14 +10,14 @@ import ACStorekit
 
 final class MockupRemoteService {
     
-    var purchaseService: PurchaseService
+    var purchaseService: ACPurchaseService
     
-    init(purchaseService: PurchaseService) {
+    init(purchaseService: ACPurchaseService) {
         self.purchaseService = purchaseService
     }
     
     // In a real case, this is all done by the server, but for the example, we'll do the validation process ourselves
-    func validateReceipt(_ info: ReceiptProductInfo, competition: ((_ purchasedProducts: Set<ProductExpiredInfo>?) -> Void)?) {
+    func validateReceipt(_ info: ACReceiptProductInfo, competition: ((_ purchasedProducts: Set<ACProductExpiredInfo>?) -> Void)?) {
         // Recipe would be sent to the server
         // let receipt = info.receipt
         print("validateReceipt....")

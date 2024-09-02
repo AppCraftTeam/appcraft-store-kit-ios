@@ -11,7 +11,7 @@ import Foundation
 final class SubscriptionsViewModel {
     
     // MARK: - Params
-    var purchaseService: PurchaseService
+    var purchaseService: ACPurchaseService
     var remoteService: MockupRemoteService
     
     var selectedProduct: ACPurchases?
@@ -26,7 +26,7 @@ final class SubscriptionsViewModel {
     }
     
     init() {
-        self.purchaseService = PurchaseService(products: SubscriptionsViewModel.products, sharedSecretKey: AppConfiguration.sharedSecretKey)
+        self.purchaseService = ACPurchaseService(products: SubscriptionsViewModel.products, sharedSecretKey: AppConfiguration.sharedSecretKey)
         self.remoteService = MockupRemoteService(purchaseService: self.purchaseService)
     }
     

@@ -1,5 +1,5 @@
 //
-//  ReceiptService.swift
+//  ACReceiptService.swift
 //
 //
 //  Created by Pavel Moslienko on 08.08.2024.
@@ -8,7 +8,7 @@
 import Foundation
 import StoreKit
 
-open class ReceiptService: NSObject {
+open class ACReceiptService: NSObject {
     
     private(set) public var receiptData: Data?
     
@@ -24,6 +24,8 @@ open class ReceiptService: NSObject {
               FileManager.default.fileExists(atPath: receiptPath),
               let receiptURL = Bundle.main.appStoreReceiptURL
         else {
+            print("fetchReceipt failed")
+
             if countReceiptRefreshRequest >= maxCountReceiptRefreshRequest {
                 completion(.failure(NSError(domain: "ReceiptFetchError", code: 0, userInfo: nil)))
                 return
@@ -41,7 +43,8 @@ open class ReceiptService: NSObject {
             refreshReceipt()
             return
         }
-        
+        print("fetchReceipt try getting data")
+
         do {
             let receiptData = try Data(contentsOf: receiptURL, options: .alwaysMapped)
             self.receiptData = receiptData
@@ -61,7 +64,7 @@ open class ReceiptService: NSObject {
     }
 }
 
-extension ReceiptService: SKRequestDelegate {
+extension ACReceiptService: SKRequestDelegate {
     open func requestDidFinish(_ request: SKRequest) {
         print("requestDidFinish")
         request.cancel()

@@ -1,22 +1,22 @@
 import Foundation
 import StoreKit
 
-open class ReceiptProductRequest: NSObject {
-    public typealias Completion = (Result<ReceiptProductInfo, Error>) -> Void
+open class ACReceiptProductRequest: NSObject {
+    public typealias Completion = (Result<ACReceiptProductInfo, Error>) -> Void
     
-    private let receiptService: ReceiptService
-    private let validationService: ReceiptValidationService
-    private let updateService: ReceiptUpdateService
+    private let receiptService: ACReceiptService
+    private let validationService: ACReceiptValidationService
+    private let updateService: ACReceiptUpdateService
     
     private var completion: Completion?
     
     public init(sharedSecretKey: String, keyReceiptMaxExpiresDate: String) {
-        self.receiptService = ReceiptService()
-        self.validationService = ReceiptValidationService(sharedSecretKey: sharedSecretKey)
-        self.updateService = ReceiptUpdateService(keyReceiptMaxExpiresDate: keyReceiptMaxExpiresDate)
+        self.receiptService = ACReceiptService()
+        self.validationService = ACReceiptValidationService(sharedSecretKey: sharedSecretKey)
+        self.updateService = ACReceiptUpdateService(keyReceiptMaxExpiresDate: keyReceiptMaxExpiresDate)
     }
     
-    open func start(validationType: ReceiptValidationType, _ completion: Completion?) {
+    open func start(validationType: ACReceiptValidationType, _ completion: Completion?) {
         self.completion = completion
         print("fetchReceiptfetchReceipt start...")
 
@@ -38,13 +38,13 @@ open class ReceiptProductRequest: NSObject {
     }
 }
 
-private extension ReceiptProductRequest {
+private extension ACReceiptProductRequest {
     
-    func handleReceiptData(_ receiptData: Data, validationType: ReceiptValidationType) {
+    func handleReceiptData(_ receiptData: Data, validationType: ACReceiptValidationType) {
         switch validationType {
         case .manual:
             // The validation is manual, i.e. will be done outside the library, so only return the recipe
-            finish(result: .success(ReceiptProductInfo(expiredInfo: [], receipt: receiptData)))
+            finish(result: .success(ACReceiptProductInfo(expiredInfo: [], receipt: receiptData)))
         case .apple:
             // Validation by accessing the Apple web service, for each product the subscription expiration date will be retrieved
             validationService.validateReceipt(receiptData) { [weak self] validationResult in
@@ -55,7 +55,7 @@ private extension ReceiptProductRequest {
                     self.updateService.updateReceiptInfo(with: json) { infoFetchingResult in
                         switch infoFetchingResult {
                         case let .success(info):
-                            self.finish(result: .success(ReceiptProductInfo(expiredInfo: info, receipt: receiptData)))
+                            self.finish(result: .success(ACReceiptProductInfo(expiredInfo: info, receipt: receiptData)))
                         case let .failure(error):
                             #warning("May be return success with receipt only?")
                             self.finish(result: .failure(error))
@@ -68,7 +68,7 @@ private extension ReceiptProductRequest {
         }
     }
     
-    func finish(result: Result<ReceiptProductInfo, Error>) {
+    func finish(result: Result<ACReceiptProductInfo, Error>) {
         completion?(result)
         completion = nil
     }

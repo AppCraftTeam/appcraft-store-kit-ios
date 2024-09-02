@@ -1,7 +1,7 @@
 import Foundation
 import StoreKit
 
-open class LoadProductsRequest: NSObject {
+open class ACLoadProductsRequest: NSObject {
     public typealias Completion = (Result<[SKProduct], Error>) -> Void
     
     private let productIdentifiers: Set<ACProductTypeItem>
@@ -25,7 +25,7 @@ open class LoadProductsRequest: NSObject {
     }
 }
 
-extension LoadProductsRequest: SKProductsRequestDelegate {
+extension ACLoadProductsRequest: SKProductsRequestDelegate {
     
     public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
         finish(result: .success(response.products))
@@ -36,7 +36,7 @@ extension LoadProductsRequest: SKProductsRequestDelegate {
     }
 }
 
-private extension LoadProductsRequest {
+private extension ACLoadProductsRequest {
     
     func finish(result: Result<[SKProduct], Error>) {
         completion?(result)
