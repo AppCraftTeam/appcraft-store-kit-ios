@@ -26,7 +26,11 @@ final class SubscriptionsViewModel {
     }
     
     init() {
-        self.purchaseService = ACPurchaseService(products: SubscriptionsViewModel.products, sharedSecretKey: AppConfiguration.sharedSecretKey)
+        self.purchaseService = ACPurchaseService(
+            products: SubscriptionsViewModel.products,
+            sharedSecretKey: AppConfiguration.sharedSecretKey,
+            logLevel: .full
+        )
         self.remoteService = MockupRemoteService(purchaseService: self.purchaseService)
     }
     
@@ -46,13 +50,11 @@ private extension SubscriptionsViewModel {
                 switch result {
                 case let .success(products):
                     DispatchQueue.main.async { [weak self] in
-                        print("selectedProduct - \(products.map({ $0.productExpiresDateFromLocal }))")
                         self?.selectedProduct = products.first(where: { $0.skProduct.isSubscription })
                         self?.didProductsLoaded?()
                         self?.didStopLoading?()
                     }
-                case let .failure(error):
-                    print("didFailedFetchProducts - \(error.localizedDescription))")
+                case .failure:
                     DispatchQueue.main.async { [weak self] in
                         self?.didStopLoading?()
                     }
@@ -60,13 +62,9 @@ private extension SubscriptionsViewModel {
             },
             didCompletePurchase: { [weak self] result in
                 switch result {
-                case let .success(products):
-                    print("didProductPurchased - \(products.map({ $0.debugDescription }))")
+                case .success:
                     self?.validateReceipt()
-                case let .failure(error):
-                    if !error.isCancelled {
-                        print("didFailedBuyPurchase - \(error.localizedDescription))")
-                    }
+                case .failure:
                     DispatchQueue.main.async { [weak self] in
                         self?.didStopLoading?()
                     }
@@ -75,11 +73,11 @@ private extension SubscriptionsViewModel {
             didRestorePurchases: { [weak self] result in
                 switch result {
                 case let .success(products):
-                    print("didProductsRestored - \(products.map({ $0.debugDescription }))")
+                    print("[SubscriptionsViewModel] didProductsRestored - \(products.map({ $0.debugDescription }))")
                     self?.validateReceipt()
                 case let .failure(error):
                     if !error.isCancelled {
-                        print("didFailedRestorePurchase - \(error.localizedDescription))")
+                        print("[SubscriptionsViewModel] didFailedRestorePurchase - \(error.localizedDescription))")
                     }
                     DispatchQueue.main.async { [weak self] in
                         self?.didStopLoading?()
@@ -91,12 +89,9 @@ private extension SubscriptionsViewModel {
     
     func validateReceipt() {
         self.purchaseService.fetchReceipt(validationType: .manual) { result in
-            print("result - \(result)")
             switch result {
             case let .success(data):
                 self.remoteService.validateReceipt(data) { purchasedProducts in
-                    print("purchasedProducts - \(String(describing: purchasedProducts))")
-                    
                     (purchasedProducts ?? []).forEach({ info in
                         self.purchaseService.products
                             .first(where: { $0.product.productIdentifer == info.productId })?
@@ -109,7 +104,6 @@ private extension SubscriptionsViewModel {
                     }
                 }
             case let .failure(error):
-                print("failed fetch receipt - \(String(describing: error.localizedDescription))")
                 DispatchQueue.main.async { [weak self] in
                     self?.didProductsLoaded?()
                     self?.didStopLoading?()
@@ -123,7 +117,6 @@ private extension SubscriptionsViewModel {
          In a real application, there would be a request to the server to get a profile or information about the status of subscriptions,
          but for the example, it will again perform validation through Apple
          */
-        print("getActualSubscription")
         DispatchQueue.main.async { [weak self] in
             self?.didBeginLoading?()
             self?.validateReceipt()

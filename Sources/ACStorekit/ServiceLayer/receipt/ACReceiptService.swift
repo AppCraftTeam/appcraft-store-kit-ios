@@ -11,7 +11,8 @@ import StoreKit
 open class ACReceiptService: NSObject {
     
     private(set) public var receiptData: Data?
-    
+    private var logLevel: ACLogLevel
+
     private var receiptRefreshRequest: SKReceiptRefreshRequest?
     private var countReceiptRefreshRequest: Int = 0
     private let maxCountReceiptRefreshRequest: Int = 4
@@ -19,12 +20,21 @@ open class ACReceiptService: NSObject {
     private var didReceiptUpdated: (() -> Void)?
     private var didFailUpdateReceipt: ((_ error: Error) -> Void)?
     
+    public init(logLevel: ACLogLevel) {
+        self.logLevel = logLevel
+    }
+    
     open func fetchReceipt(completion: @escaping (Result<Data, Error>) -> Void) {
+        if self.logLevel == .full {
+            print("[ACReceiptService] fetching receipt started")
+        }
         guard let receiptPath = Bundle.main.appStoreReceiptURL?.path,
               FileManager.default.fileExists(atPath: receiptPath),
               let receiptURL = Bundle.main.appStoreReceiptURL
         else {
-            print("fetchReceipt failed")
+            if self.logLevel.isAllowPrintError {
+                print("[ACReceiptService] Fetching receipt failed")
+            }
 
             if countReceiptRefreshRequest >= maxCountReceiptRefreshRequest {
                 completion(.failure(NSError(domain: "ReceiptFetchError", code: 0, userInfo: nil)))
@@ -32,18 +42,15 @@ open class ACReceiptService: NSObject {
             }
             
             didReceiptUpdated = {
-                print("didReceiptUpdated")
                 self.fetchReceipt(completion: completion)
             }
             didFailUpdateReceipt = { error in
-                print("didFailUpdateReceipt error \(error)")
                 self.fetchReceipt(completion: completion)
             }
             
             refreshReceipt()
             return
         }
-        print("fetchReceipt try getting data")
 
         do {
             let receiptData = try Data(contentsOf: receiptURL, options: .alwaysMapped)
@@ -55,7 +62,9 @@ open class ACReceiptService: NSObject {
     }
     
     private func refreshReceipt() {
-        print("refreshReceipt....")
+        if self.logLevel == .full {
+            print("[ACReceiptService] refresh receipt started")
+        }
         countReceiptRefreshRequest += 1
         
         receiptRefreshRequest = SKReceiptRefreshRequest()
@@ -66,13 +75,17 @@ open class ACReceiptService: NSObject {
 
 extension ACReceiptService: SKRequestDelegate {
     open func requestDidFinish(_ request: SKRequest) {
-        print("ACReceiptService requestDidFinish")
+        if self.logLevel == .full {
+            print("[ACReceiptService] receipt success updating")
+        }
         request.cancel()
         didReceiptUpdated?()
     }
     
     open func request(_ request: SKRequest, didFailWithError error: Error) {
-        print("ACReceiptService didFailWithError - \(error)")
+        if self.logLevel.isAllowPrintError {
+            print("[ACReceiptService] failed updating receipt: \(error)")
+        }
         didFailUpdateReceipt?(error)
     }
 }

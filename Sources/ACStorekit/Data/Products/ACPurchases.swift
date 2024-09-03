@@ -43,7 +43,6 @@ open class ACPurchases: ACPurchaseType {
     }
     
     public func saveExpiresDate(_ date: Date?) {
-        print("saveExpiresDate date \(date) for \(self.product.productIdentifer)")
         if let date = date {
             UserDefaults.standard.set(date, forKey: self.product.productIdentifer)
         } else {

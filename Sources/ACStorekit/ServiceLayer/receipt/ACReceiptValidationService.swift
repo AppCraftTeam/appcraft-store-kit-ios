@@ -8,8 +8,8 @@
 import Foundation
 
 open class ACReceiptValidationService {
-    private let sandboxVerifyUrl = URL(string: "https://sandbox.itunes.apple.com/verifyReceipt")!
-    private let prodVerifyUrl = URL(string: "https://buy.itunes.apple.com/verifyReceipt")!
+    private let sandboxVerifyUrl = URL(string: "https://sandbox.itunes.apple.com/verifyReceipt")
+    private let prodVerifyUrl = URL(string: "https://buy.itunes.apple.com/verifyReceipt")
     private let sharedSecretKey: String
     
     public init(sharedSecretKey: String) {
@@ -17,6 +17,12 @@ open class ACReceiptValidationService {
     }
     
     open func validateReceipt(_ receiptData: Data, completion: @escaping (Result<[String: Any], Error>) -> Void) {
+        guard let prodVerifyUrl = prodVerifyUrl,
+              let sandboxVerifyUrl = sandboxVerifyUrl else {
+            completion(.failure(NSError(domain: "Incorrect url", code: 0, userInfo: nil)))
+            return
+        }
+        
         let receiptString = receiptData.base64EncodedString()
         let requestData: [String: Any] = [
             "receipt-data": receiptString,
@@ -27,7 +33,6 @@ open class ACReceiptValidationService {
         let httpBody = try? JSONSerialization.data(withJSONObject: requestData, options: [])
         
         sendRequestReceiptInfoOfApple(url: prodVerifyUrl, httpBody: httpBody) { [weak self] result in
-            print("sendRequestReceiptInfoOfApple result - \(result)")
             guard let self = self else {
                 return
             }
@@ -35,7 +40,7 @@ open class ACReceiptValidationService {
             switch result {
             case let .success(json):
                 if let status = json["status"] as? Int, status == 21007 {
-                    self.sendRequestReceiptInfoOfApple(url: self.sandboxVerifyUrl, httpBody: httpBody, completion: completion)
+                    self.sendRequestReceiptInfoOfApple(url: sandboxVerifyUrl, httpBody: httpBody, completion: completion)
                 } else {
                     completion(.success(json))
                 }

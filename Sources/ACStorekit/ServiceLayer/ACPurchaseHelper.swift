@@ -4,15 +4,17 @@ open class ACPurchaseHelper {
     private let keyReceiptMaxExpiresDate: String
 
     public let productIdentifiers: Set<ACProductTypeItem>
-    public let ACLoadProductsRequest: ACLoadProductsRequest
+    public let loadProductsRequest: ACLoadProductsRequest
     public let paymentProductsRequest: ACPaymentProductRequest
-    public let ACReceiptProductRequest: ACReceiptProductRequest
-    
-    public init(productIdentifiers: Set<ACProductTypeItem>, sharedSecretKey: String, keyReceiptMaxExpiresDate: String) {
+    public let receiptProductRequest: ACReceiptProductRequest
+    public var logLevel: ACLogLevel
+
+    public init(productIdentifiers: Set<ACProductTypeItem>, sharedSecretKey: String, keyReceiptMaxExpiresDate: String, logLevel: ACLogLevel) {
         self.productIdentifiers = productIdentifiers
-        self.ACLoadProductsRequest = .init(productIdentifiers: productIdentifiers)
+        self.logLevel = logLevel
+        self.loadProductsRequest = .init(productIdentifiers: productIdentifiers)
         self.paymentProductsRequest = .init()
-        self.ACReceiptProductRequest = .init(sharedSecretKey: sharedSecretKey, keyReceiptMaxExpiresDate: keyReceiptMaxExpiresDate)
+        self.receiptProductRequest = .init(sharedSecretKey: sharedSecretKey, keyReceiptMaxExpiresDate: keyReceiptMaxExpiresDate, logLevel: logLevel)
         self.keyReceiptMaxExpiresDate = keyReceiptMaxExpiresDate
     }
     

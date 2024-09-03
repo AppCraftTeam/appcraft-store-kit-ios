@@ -20,14 +20,14 @@ final class MockupRemoteService {
     func validateReceipt(_ info: ACReceiptProductInfo, competition: ((_ purchasedProducts: Set<ACProductExpiredInfo>?) -> Void)?) {
         // Recipe would be sent to the server
         // let receipt = info.receipt
-        print("validateReceipt....")
+        print("[MockupRemoteService] validateReceipt started")
         purchaseService.fetchReceipt(validationType: .apple) { result in
             switch result {
             case let .success(data):
-                print("expiredInfo - \(data.expiredInfo)")
+                print("[MockupRemoteService] expiredInfo - \(data.expiredInfo)")
                 competition?(data.expiredInfo)
             case let .failure(error):
-                print("failed fetch receipt - \(String(describing: error.localizedDescription))")
+                print("[MockupRemoteService] failed fetch receipt - \(String(describing: error.localizedDescription))")
                 competition?(nil)
             }
         }

@@ -9,11 +9,12 @@ import Foundation
 
 open class ACReceiptUpdateService {
     public typealias Completion = (Result<Set<ACProductExpiredInfo>, Error>) -> Void
-
     private let keyReceiptMaxExpiresDate: String
-    
-    public init(keyReceiptMaxExpiresDate: String) {
+    private var logLevel: ACLogLevel
+
+    public init(keyReceiptMaxExpiresDate: String, logLevel: ACLogLevel) {
         self.keyReceiptMaxExpiresDate = keyReceiptMaxExpiresDate
+        self.logLevel = logLevel
     }
     
     open func updateReceiptInfo(with json: [String: Any], completion: @escaping Completion) {
@@ -33,7 +34,9 @@ open class ACReceiptUpdateService {
                 let expiresDate = receipt["expires_date"] as? String,
                 let expiresDateDt = formatter.date(from: expiresDate)
             else {
-                print("zzzz failed parce receipt - \(receipt)")
+                if self.logLevel.isAllowPrintError {
+                    print("[ACReceiptUpdateService] failed parce receipt: \(receipt)")
+                }
                 continue
             }
             
@@ -43,7 +46,9 @@ open class ACReceiptUpdateService {
         }
         
         updateMaxExpiresDate(of: expiresInfo.map({ $0.date }))
-        print("expiresInfo - \(expiresInfo)")
+        if self.logLevel == .full {
+            print("[ACReceiptUpdateService] Created expires info model: \(expiresInfo)")
+        }
         completion(.success(expiresInfo))
     }
     

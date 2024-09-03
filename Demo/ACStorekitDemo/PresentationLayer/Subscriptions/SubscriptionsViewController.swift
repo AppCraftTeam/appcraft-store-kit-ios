@@ -127,12 +127,10 @@ private extension SubscriptionsViewController {
         }
         let activeProducts = model.purchaseService.products.getActiveProducts()
         let isPurchased = activeProducts.contains(product)
-        print("activeProducts - \(activeProducts), isPurchased - \(isPurchased) for \(product.product.productIdentifer)")
         setPurchaseButton(isEnable: model.selectedProduct != nil && !isPurchased)
     }
     
     func setPurchaseButton(isEnable: Bool) {
-        print("setPurchaseButton isEnable - \(isEnable)")
         purchaseButton.isUserInteractionEnabled = isEnable
         purchaseButton.layer.opacity = isEnable ? 1.0 : 0.6
     }
