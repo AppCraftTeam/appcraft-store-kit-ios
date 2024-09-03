@@ -7,6 +7,7 @@
 
 import Foundation
 
+// The protocol has been added so that it can be inherited in enum
 public protocol ACProductType {
     var product: ACProduct { get }
 }

@@ -1,6 +1,6 @@
 //
 //  ACPurchases.swift
-//  
+//
 //
 //  Created by Pavel Moslienko on 22.07.2024.
 //
@@ -54,7 +54,7 @@ open class ACPurchases: ACPurchaseType {
 // MARK: - Hashable
 extension ACPurchases: Hashable {
     
-     static public func == (lhs: ACPurchases, rhs: ACPurchases) -> Bool {
+    static public func == (lhs: ACPurchases, rhs: ACPurchases) -> Bool {
         lhs.product.productIdentifer == rhs.product.productIdentifer
     }
     

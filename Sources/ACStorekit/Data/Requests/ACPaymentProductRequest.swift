@@ -51,7 +51,6 @@ private extension ACPaymentProductRequest {
     
     func finish(result: Result<SKPaymentTransaction, Error>) {
         completion?(result)
-        //completion = nil
         
         SKPaymentQueue.default().remove(self)
     }

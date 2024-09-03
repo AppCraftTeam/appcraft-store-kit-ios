@@ -8,15 +8,8 @@
 import Foundation
 import StoreKit
 
-public protocol ACProductItem {
-    var productIdentifer: String { get }
-    var name: String { get }
-    var description: String { get }
-    var sortIndex: Int { get }
-}
-
 /// Filled in user application
-open class ACProduct: ACProductItem {
+open class ACProduct {
     open var productIdentifer: String
     open var name: String
     open var description: String
