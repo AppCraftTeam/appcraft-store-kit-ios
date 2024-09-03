@@ -34,6 +34,7 @@ final class SubscriptionsViewModel {
         self.setup()
         self.didBeginLoading?()
         self.purchaseService.loadProducts()
+        self.getActualSubscription()
     }
 }
 
@@ -114,6 +115,18 @@ private extension SubscriptionsViewModel {
                     self?.didStopLoading?()
                 }
             }
+        }
+    }
+    
+    func getActualSubscription() {
+        /*
+         In a real application, there would be a request to the server to get a profile or information about the status of subscriptions,
+         but for the example, it will again perform validation through Apple
+         */
+        print("getActualSubscription")
+        DispatchQueue.main.async { [weak self] in
+            self?.didBeginLoading?()
+            self?.validateReceipt()
         }
     }
 }

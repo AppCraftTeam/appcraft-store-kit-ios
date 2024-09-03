@@ -48,6 +48,7 @@ open class ACPurchaseService: ACPurchaseHelper {
     }
     
     open func fetchReceipt(validationType: ACReceiptValidationType, callback: @escaping (Result<ACReceiptProductInfo, Error>) -> Void) {
+        print("...fetchReceipt validationType - \(validationType)")
         ACReceiptProductRequest.start(validationType: validationType) { result in
             print("fetchReceipt result result - \(result)")
             switch result {
@@ -67,7 +68,8 @@ open class ACPurchaseService: ACPurchaseHelper {
     open func purchase(_ product: SKProduct) {
         paymentProductsRequest.purchase(product: product) { [weak self] result in
             guard let self = self else { return }
-            
+            print("purchase result - \(result)")
+
             switch result {
             case .success:
                 self.handlePurchaseSuccess()
@@ -118,6 +120,7 @@ private extension ACPurchaseService {
     }
     
     func handlePurchaseSuccess() {
+        print("handlePurchaseSuccess")
         fetchReceipt(validationType: validationType) { [weak self] result in
             guard let self = self else { return }
             

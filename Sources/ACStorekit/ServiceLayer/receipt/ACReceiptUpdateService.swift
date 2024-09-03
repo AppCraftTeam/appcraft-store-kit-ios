@@ -32,15 +32,18 @@ open class ACReceiptUpdateService {
                 let productID = receipt["product_id"] as? String,
                 let expiresDate = receipt["expires_date"] as? String,
                 let expiresDateDt = formatter.date(from: expiresDate)
-            else { continue }
+            else {
+                print("zzzz failed parce receipt - \(receipt)")
+                continue
+            }
             
             if expiresDateDt > Date() {
                 expiresInfo.insert(ACProductExpiredInfo(productId: productID, date: expiresDateDt))
-                // UserDefaults.standard.set(expiresDateDt, forKey: productID)
             }
         }
         
         updateMaxExpiresDate(of: expiresInfo.map({ $0.date }))
+        print("expiresInfo - \(expiresInfo)")
         completion(.success(expiresInfo))
     }
     

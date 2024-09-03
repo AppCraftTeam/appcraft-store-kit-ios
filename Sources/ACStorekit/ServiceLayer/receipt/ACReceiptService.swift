@@ -66,13 +66,13 @@ open class ACReceiptService: NSObject {
 
 extension ACReceiptService: SKRequestDelegate {
     open func requestDidFinish(_ request: SKRequest) {
-        print("requestDidFinish")
+        print("ACReceiptService requestDidFinish")
         request.cancel()
         didReceiptUpdated?()
     }
     
     open func request(_ request: SKRequest, didFailWithError error: Error) {
-        print("didFailWithError - \(error)")
+        print("ACReceiptService didFailWithError - \(error)")
         didFailUpdateReceipt?(error)
     }
 }

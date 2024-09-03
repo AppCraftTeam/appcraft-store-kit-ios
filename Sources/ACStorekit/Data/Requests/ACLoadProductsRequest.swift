@@ -40,7 +40,7 @@ private extension ACLoadProductsRequest {
     
     func finish(result: Result<[SKProduct], Error>) {
         completion?(result)
-        completion = nil
+        //completion = nil
         
         productsRequest?.cancel()
         productsRequest = nil

@@ -92,6 +92,7 @@ final class SubscriptionsViewController: UIViewController {
         
         self.model.didProductsLoaded = { [weak self] in
             self?.tableView.reloadData()
+            self?.updatePuchaseBtnStatus()
         }
         
         self.model.didBeginLoading = { [weak self] in
@@ -102,8 +103,8 @@ final class SubscriptionsViewController: UIViewController {
             self?.setLoadingState(isLoading: false)
         }
         
+        self.setPurchaseButton(isEnable: false)
         self.model.reload()
-        self.purchaseButton.isUserInteractionEnabled = model.selectedProduct != nil
     }
 }
 
@@ -111,11 +112,29 @@ final class SubscriptionsViewController: UIViewController {
 private extension SubscriptionsViewController {
     
     func setLoadingState(isLoading: Bool) {
-        self.purchaseButton.isUserInteractionEnabled = !isLoading
+        if isLoading {
+            setPurchaseButton(isEnable: false)
+        }
         self.restoreButton.isUserInteractionEnabled = !isLoading
         self.tableView.isUserInteractionEnabled = !isLoading
         
         isLoading ? self.indicatorView.startAnimating() : self.indicatorView.stopAnimating()
+    }
+    
+    func updatePuchaseBtnStatus() {
+        guard let product = model.selectedProduct else {
+            return
+        }
+        let activeProducts = model.purchaseService.products.getActiveProducts()
+        let isPurchased = activeProducts.contains(product)
+        print("activeProducts - \(activeProducts), isPurchased - \(isPurchased) for \(product.product.productIdentifer)")
+        setPurchaseButton(isEnable: model.selectedProduct != nil && !isPurchased)
+    }
+    
+    func setPurchaseButton(isEnable: Bool) {
+        print("setPurchaseButton isEnable - \(isEnable)")
+        purchaseButton.isUserInteractionEnabled = isEnable
+        purchaseButton.layer.opacity = isEnable ? 1.0 : 0.6
     }
 }
 
@@ -163,7 +182,7 @@ extension SubscriptionsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let product = model.purchaseService.products[indexPath.row]
         model.selectedProduct = product
-        purchaseButton.isUserInteractionEnabled = model.selectedProduct != nil
+        updatePuchaseBtnStatus()
         tableView.reloadData()
     }
     

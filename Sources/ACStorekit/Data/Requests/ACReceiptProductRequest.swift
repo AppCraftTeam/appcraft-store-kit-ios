@@ -18,7 +18,7 @@ open class ACReceiptProductRequest: NSObject {
     
     open func start(validationType: ACReceiptValidationType, _ completion: Completion?) {
         self.completion = completion
-        print("fetchReceiptfetchReceipt start...")
+        print("fetchReceiptfetchReceipt start... validationType \(validationType)")
 
         receiptService.fetchReceipt { [weak self] result in
             print("fetchReceiptfetchReceipt result - \(result)")
@@ -41,6 +41,7 @@ open class ACReceiptProductRequest: NSObject {
 private extension ACReceiptProductRequest {
     
     func handleReceiptData(_ receiptData: Data, validationType: ACReceiptValidationType) {
+        print("validationType - \(validationType)")
         switch validationType {
         case .manual:
             // The validation is manual, i.e. will be done outside the library, so only return the recipe
@@ -52,7 +53,9 @@ private extension ACReceiptProductRequest {
                 
                 switch validationResult {
                 case let .success(json):
+                    print("validationResult success")
                     self.updateService.updateReceiptInfo(with: json) { infoFetchingResult in
+                        print("validationResult infoFetchingResult - \(infoFetchingResult)")
                         switch infoFetchingResult {
                         case let .success(info):
                             self.finish(result: .success(ACReceiptProductInfo(expiredInfo: info, receipt: receiptData)))
@@ -62,6 +65,7 @@ private extension ACReceiptProductRequest {
                         }
                     }
                 case let .failure(error):
+                    print("validationResult failure - \(error)")
                     self.finish(result: .failure(error))
                 }
             }
@@ -69,7 +73,8 @@ private extension ACReceiptProductRequest {
     }
     
     func finish(result: Result<ACReceiptProductInfo, Error>) {
+        print("completion - \(completion)")
         completion?(result)
-        completion = nil
+        //completion = nil
     }
 }

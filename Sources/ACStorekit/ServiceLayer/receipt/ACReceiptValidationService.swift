@@ -27,6 +27,7 @@ open class ACReceiptValidationService {
         let httpBody = try? JSONSerialization.data(withJSONObject: requestData, options: [])
         
         sendRequestReceiptInfoOfApple(url: prodVerifyUrl, httpBody: httpBody) { [weak self] result in
+            print("sendRequestReceiptInfoOfApple result - \(result)")
             guard let self = self else {
                 return
             }
