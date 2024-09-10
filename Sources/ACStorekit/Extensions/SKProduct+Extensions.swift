@@ -11,14 +11,15 @@ import StoreKit
 
 public extension SKProduct {
     
+    /// Returns a formatted price string
     public var priceDefaultString: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.locale = self.priceLocale
-        
         return formatter.string(from: self.price) ?? ""
     }
     
+    /// Checks if the product is a subscription
     public var isSubscription: Bool {
         self.subscriptionPeriod != nil
     }

@@ -8,29 +8,49 @@
 import Foundation
 import StoreKit
 
-/// Filled in library
+/// Protocol representing a purchasable product with additional details
 public protocol ACPurchaseType {
-    var product: ACProduct { get }
-    var skProduct: SKProduct { get }
-    var isActiveProduct: Bool { get }
-    var productExpiresDateFromLocal: Date?  { get }
     
+    /// The product associated with the purchase
+    var product: ACProduct { get }
+    
+    /// The StoreKit product
+    var skProduct: SKProduct { get }
+    
+    /// Boolean value indicating whether the product is active (not expired).
+    var isActiveProduct: Bool { get }
+    
+    /// The locally stored expiration date of the product
+    var productExpiresDateFromLocal: Date? { get }
+    
+    /// Saves the expiration date of the product locally.
     func saveExpiresDate(_ date: Date?)
 }
 
+/// Represents an individual purchase, conforming to `ACPurchaseType`
 open class ACPurchases: ACPurchaseType {
+    
+    /// The product associated with the purchase
     public var product: ACProduct
+    
+    /// The StoreKit product
     public var skProduct: SKProduct
     
+    /// Provides a debug description of the purchase
     public var debugDescription: String {
         "[ACPurchase] ID: \(skProduct.productIdentifier), isActive: \(isActiveProduct), expiresDate: \(productExpiresDateFromLocal)\n"
     }
     
+    /// Initializes a new `ACPurchases`
+    /// - Parameters:
+    ///   - product: The associated product.
+    ///   - skProduct: The StoreKit product.
     public init(product: ACProduct, skProduct: SKProduct) {
         self.product = product
         self.skProduct = skProduct
     }
     
+    /// Checks if the product is active by comparing the current date with the locally stored expiration date
     public var isActiveProduct: Bool {
         guard let expiresDate = productExpiresDateFromLocal else {
             return false
@@ -38,10 +58,12 @@ open class ACPurchases: ACPurchaseType {
         return expiresDate > Date()
     }
     
+    /// Retrieves the expiration date of the product from `UserDefaults`
     public var productExpiresDateFromLocal: Date? {
         UserDefaults.standard.object(forKey: self.product.productIdentifer) as? Date
     }
     
+    /// Saves or removes the expiration date of the product in `UserDefaults`
     public func saveExpiresDate(_ date: Date?) {
         if let date = date {
             UserDefaults.standard.set(date, forKey: self.product.productIdentifer)
@@ -54,7 +76,7 @@ open class ACPurchases: ACPurchaseType {
 // MARK: - Hashable
 extension ACPurchases: Hashable {
     
-    static public func == (lhs: ACPurchases, rhs: ACPurchases) -> Bool {
+    public static func == (lhs: ACPurchases, rhs: ACPurchases) -> Bool {
         lhs.product.productIdentifer == rhs.product.productIdentifer
     }
     
@@ -65,15 +87,19 @@ extension ACPurchases: Hashable {
 
 public extension Array where Element == ACPurchases {
     
-    public mutating func sortDefault() {
-        self.sort(by: { ($0.product.sortIndex) ?? 0 < ($1.product.sortIndex) })
+    /// Sorts the array of `ACPurchases` in place based on the `sortIndex` of the products
+    mutating func sortDefault() {
+        self.sort(by: { $0.product.sortIndex < $1.product.sortIndex })
     }
     
-    public func getProduct(for productIdentifer: String) -> ACPurchases? {
+    /// Retrieves a purchase by its product identifier from the array
+    /// - Parameter productIdentifer: The unique identifier of the product
+    func getProduct(for productIdentifer: String) -> ACPurchases? {
         self.first(where: { $0.product.productIdentifer == productIdentifer })
     }
     
-    public func getActiveProducts() -> [ACPurchases] {
+    /// Returns an array of purchases that are currently active (not expired)
+    func getActiveProducts() -> [ACPurchases] {
         self.filter({ $0.isActiveProduct })
     }
 }

@@ -9,9 +9,9 @@ import Foundation
 
 public extension Error {
     
+    /// Checks if the error was caused by a cancelled operation
     public var isCancelled: Bool {
-        // paymentCancelled
-        let notProvidesErrorCodes: [Int] = [2]
+        let notProvidesErrorCodes: [Int] = [2] // paymentCancelled
         return notProvidesErrorCodes.contains((self as NSError).code)
     }
 }

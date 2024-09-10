@@ -7,6 +7,10 @@
 
 import Foundation
 
+/// Enum that defines the types of receipt validation
 public enum ACReceiptValidationType {
-    case manual, apple
+    /// Manual receipt validation
+    case manual
+    /// Validation through Apple service via http request
+    case apple
 }
