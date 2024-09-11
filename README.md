@@ -3,18 +3,28 @@
 [![Swift](https://img.shields.io/badge/Swift-5-orange?style=flat-square)](https://img.shields.io/badge/Swift-5-Orange?style=flat-square)
 [![Platforms](https://img.shields.io/badge/Platforms-iOS-yellowgreen?style=flat-square)](https://img.shields.io/badge/Platforms-iOS?style=flat-square)
 [![Swift Package Manager](https://img.shields.io/badge/Swift_Package_Manager-compatible-orange?style=flat-square)](https://img.shields.io/badge/Swift_Package_Manager-compatible-orange?style=flat-square)
-[![version](https://img.shields.io/badge/version-1.0.1-white.svg)](https://semver.org)
+[![version](https://img.shields.io/badge/version-1.0.0-white.svg)](https://semver.org)
 
 ## Requirements
 - Xcode 13 and later
-- iOS 11 and later
+- iOS 12 and later
 - Swift 5.0 and later
 
 ## Overview
 * [Demo](#demo)
 * [Install](#install)
+* [Products](#Products)
+	* [List of products](#list-of-products)
+	* [Retrieving from App Store](#retrieving-a-list-of-products-from-app-store)
+* [Basic usage](#basic-usage)
+	* [Handlers](#handlers)
+	* [Purchase](#purchase)
+	* [Restore purchases](#restore-purchases)
+* [Recipe](#validation-and-retrieving-a-recipe)
+* [License](#License)
 
 ## Demo
+
 All these examples, as well as the integration of the `ACStorekit` module into the application, can be seen in action in the [Demo project](/Demo).
 
 ## Install
@@ -28,9 +38,10 @@ To install this Swift package into your project, follow these steps:
 
 Xcode will then resolve the package and add it to your project. You can now import and use the package in your code.
 
-## Список продуктов
+## Products
+### List of products
 
-Для начала работы создайте список продуктов, соответствующий классу `ACProduct`:
+To store the list of products, it is necessary to create an object conforming to the `ACProduct` class:
 
 ```swift
 class ACProduct {
@@ -42,7 +53,7 @@ class ACProduct {
 }
 ```
 
-Для удобства в разработке список продуктов можно хранить в enum, тогда ваш enum должен соответствовать протоколу `ACProductType`, например так:
+For ease of development, the list of products can be stored in an enum, then your enum must match the `ACProductType` protocol, for example like this:
 
 ```swift
 enum AppPurchases: String, ACProductType {
@@ -61,9 +72,17 @@ enum AppPurchases: String, ACProductType {
 
 ```
 
-## Инициализация ACPurchaseService
+### Retrieving a list of products from App Store
 
-Основной класс, выполняющий получение списка продукта из App Store, процесс покупки, восстановления и т.д - ACPurchaseService
+Create an [`ACPurchaseService`](#basic-usage) object and call to fetch the product list:
+
+```swift
+purchaseService.loadProducts()
+```
+
+## Basic usage
+
+The main class that performs the product listing retrieval from the App Store, the process of purchasing, restoring, etc - `ACPurchaseService`.
 
 ```swift
 class ACPurchaseService {
@@ -73,66 +92,69 @@ class ACPurchaseService {
 }
 ```
 
-Получение списка продуктов
-```swift
-purchaseService.loadProducts()
-```
-
 ## Handlers
+`setupCallbacks()` method is used to handle the processing of all events.
 
 ```swift
 purchaseService.setupCallbacks(
   didUpdateProductsList: { result in
-		<Обработка Result со списком продуктов или ошибки>
+	// Result processing with a list of products or errors
   },
   didCompletePurchase: { result in
-		<Обработка Result со списком купленных продуктов или ошибки>
+	// Result processing with a list of purchased products or errors
   },
   didRestorePurchases: { result in
-		<Обработка Result со списком восстановленных продуктов или ошибки>
+	// Result processing with a list of recovered products or errors
   }
 )
 ```
 
+### Purchase
+
 ```swift
+purchaseService.purchase(<SKProduct>)
+```
+
+Track the result of the execution in [Handlers](#handlers)
+
+###  Restore purchases
+
+```swift
+purchaseService.restore()
+```
+
+Track the result of the execution in [Handlers](#handlers)
+
+## Validation and retrieving a recipe
+
+You need to pass the validation type. Validation via Apple is done by sending a rest request to Apple server, manually means that your own validation logic will be used, for example on your server.
+
+```swift
+enum ACReceiptValidationType {
+  case manual
+  case apple
+}
 ```
 
 ```swift
+ self.purchaseService.fetchReceipt(validationType: .manual) { result in }
+```
+
+If successful, a `ACReceiptProductInfo` model will be returned containing the recipe and validity data for active subscriptions (*in the case of validation via Apple*):
+
+```swift
+public struct ACReceiptProductInfo {
+  var expiredInfo: Set<ACProductExpiredInfo>
+  var receipt: Data
+}
 ```
 
 ```swift
+struct ACProductExpiredInfo {
+  var productId: String
+  var date: Date
+}
 ```
-
-```swift
-```
-
-```swift
-```
-
-```swift
-```
-
-```swift
-```
-
-```swift
-```
-
-```swift
-```
-
-```swift
-```
-
-```swift
-```
-
-```swift
-```
-
-```swift
-```
-
 
 ## License
 This library is licensed under the MIT License.
